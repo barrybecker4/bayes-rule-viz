@@ -52,7 +52,7 @@ var link = svg.append("g").selectAll(".link")
     .attr("class", "link")
     .attr("d", path)
     // has bug for now
-    //.style("stroke", function(d) { return "url(#" + getLinkID(d) + ")"; })
+    .style("stroke", function(d) { return "url(#" + getLinkID(d) + ")"; })
     .style("stroke-width", function (d) {
         return Math.max(1, d.dy);
     })
@@ -66,7 +66,8 @@ var grads = defs.selectAll("linearGradient")
 
 grads.enter().append("linearGradient")
     .attr("id", getLinkID)
-    .attr("gradientUnits", "objectBoundingBox");
+    .attr("gradientUnits", "userSpaceOnUse");
+
 
 grads.html("") // erase any existing <stop> elements on update
     .append("stop")
