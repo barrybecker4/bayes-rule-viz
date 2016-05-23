@@ -34,21 +34,19 @@ body {
 }
 
 .ui-slider-horizontal {
-    height: 10px;
+    height: 12px;
     width: 200px;
 }
 
 .ui-slider .ui-slider-handle {
-    height: 15px;
+    height: 17px;
     width: 10px;
 }
 
 .slider {
-    //width: 300px;
-    //min-width: 200px;
     float: right;
 }
 
 .inputs {
-    width: 600px;
+    width: 500px;
 }
