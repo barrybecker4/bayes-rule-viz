@@ -1,18 +1,35 @@
 <html>
     <head>
         <title>Disease Testing</title>
-        <!--script src="lib/jquery-1.12.4.min.js"></script-->
+        <script src="lib/jquery-1.12.4.min.js"></script>
+        <script src="lib/jquery-ui-1.11.4.min.js"></script>
         <script src="lib/d3.min.js"></script>
         <script src="lib/sankey.js"></script>
 
         <script src="js/disease.js"></script>
         <script src="js/sankeyView.js"></script>
 
+        <link rel="stylesheet" type="text/css" href="lib/jquery-ui-1.11.4.min.css">
         <link rel="stylesheet" type="text/css" href="css/styles.css">
     </head>
 
     <body onload="disease.init()">
         <h1>Disease Testing Visualization</h1>
+        <p>Suppose your doctor tests you for a terrible disease, and the results are positive!
+            How worried should you be?
+            <a href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes' theorem</a>, can be used to answer this question.
+        </p>
+        <p>Suppose the total population is 1,000,000 people.
+            Let <span class="diseased">D</span> = <span class="diseased">Diseased</span>
+            and <span class="healthy">H</span> = <span class="healthy">Healthy</span>.</p>
+
+        <div class="inputs">
+            <span class="input-line">The chance of having the disease is <span id="probability-diseased">0.1</span>%
+              <span id="probability-diseased-slider" class="slider"></span>
+            </span>
+            <div class="input-line">The test accuracy is <span id="test-accuracy">99.0</span>%<div id="test-accuracy-slider" class="slider"></div>
+            </div>
+        </div>
         <p id="chart"></p>
     </body>
 </html>
