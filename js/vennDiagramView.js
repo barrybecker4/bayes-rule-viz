@@ -2,10 +2,9 @@
 var disease = (function(module) {
 
     /**
-     *
-     * @param parentEl the selector for the element into which the sankeyView will be placed
+     * @param parentEl the selector for the element into which the vennDiagramView will be placed
      */
-    module.sankeyView = function(parentEl) {
+    module.vennDiagramView = function(parentEl) {
 
         // load the data
         var graph = {
@@ -24,7 +23,7 @@ var disease = (function(module) {
             ]
         };
 
-        var margin = {top: 10, right: 10, bottom: 10, left: 10};
+        var margin = {top: 10, right: 20, bottom: 10, left: 10};
         var chartWidth = $(parentEl).width();
         var width = chartWidth - margin.left - margin.right;
         var height = 400 - margin.top - margin.bottom;

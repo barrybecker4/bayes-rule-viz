@@ -8,6 +8,8 @@
 
         <script src="js/disease.js"></script>
         <script src="js/sankeyView.js"></script>
+        <script src="js/vennDiagramView.js"></script>
+        <script src="js/bayesRuleView.js"></script>
 
         <link rel="stylesheet" type="text/css" href="lib/jquery-ui-1.11.4.min.css">
         <link rel="stylesheet" type="text/css" href="css/styles.css">
@@ -27,9 +29,12 @@
             <span class="input-line">The chance of having the disease is <span id="probability-diseased">0.1</span>%
               <span id="probability-diseased-slider" class="slider"></span>
             </span>
-            <div class="input-line">The test's accuracy is <span id="test-accuracy">99.0</span>%<div id="test-accuracy-slider" class="slider"></div>
+            <div class="input-line">The test's accuracy is <span id="test-accuracy">99.0</span>%
+                <div id="test-accuracy-slider" class="slider"></div>
             </div>
         </div>
-        <p id="chart"></p>
+        <div id="sankey-view"></div>
+        <div id="venn-diagram-view"></div>
+        <div id="bayes-rule-view"></div>
     </body>
 </html>

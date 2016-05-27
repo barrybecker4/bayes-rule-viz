@@ -6,7 +6,9 @@ var disease = (function(module) {
 
         initializeInputSection();
 
-        var sankeyView = disease.sankeyView("#chart");
+        var sankeyView = disease.sankeyView("#sankey-view");
+        var vennDiagramView = disease.vennDiagramView("#venn-diagram-view");
+        var bayesRuleView = disease.bayesRuleView("#bayes-rule-view");
     };
 
     /**
@@ -14,8 +16,6 @@ var disease = (function(module) {
      *
      * TODO:
      *  - add jquery ui images to lib/images
-     *  - add vennDiagramView
-     *  - add bayeyTheoemView
      *  - update views when params change and rerender
      */
     function initializeInputSection() {

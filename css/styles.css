@@ -33,6 +33,20 @@ body {
     color: #009900;
 }
 
+
+#sankey-view {
+    float: right ;
+    width: 50% ;
+}
+#venn-diagram-view {
+    float: right;
+    width: 50%;
+}
+
+#bayes-rule-view {
+    width: 100%;
+}
+
 .ui-slider-horizontal {
     margin-top: 2px;
     height: 10px;
