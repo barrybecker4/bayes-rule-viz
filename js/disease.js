@@ -1,8 +1,14 @@
 
 var disease = (function(module) {
 
+    var TOTAL_POPULATION;
+
     /** Initialize the module */
-    module.init = function() {
+    module.init = function(totalPopulation) {
+
+        TOTAL_POPULATION = totalPopulation;
+
+        $("#total-population").text(TOTAL_POPULATION.toLocaleString());
 
         initializeInputSection();
 
@@ -67,7 +73,19 @@ var disease = (function(module) {
             var tooltip = '<div class="tooltip"><div class="tooltip-inner">' + ui.value
                 + '</div><div class="tooltip-arrow"></div></div>';
             $(sliderEl + "-slider").find('.ui-slider-handle').html(tooltip);
+            updateViews();
         }
+    }
+
+    function updateViews() {
+        var probDiseased = parseFloat($("#probability-diseased").text());
+        var testAccuracy = parseFloat($("#test-accuracy").text());
+
+        var diseasedPop = probDiseased * TOTAL_POPULATION;
+
+        // TODO calcs
+
+
     }
 
     function clearThumbTip() {
