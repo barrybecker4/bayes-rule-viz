@@ -5,24 +5,7 @@ var disease = (function(module) {
      *
      * @param parentEl the selector for the element into which the bayesRuleView will be placed.
      */
-    module.bayesRuleView = function(parentEl) {
-
-        // load the data
-        var graph = {
-            "nodes": [
-                {"node": 3, "name": "Classified Healthy"},
-                {"node": 4, "name": "Classified Healthy, but Diseased"},
-                {"node": 0, "name": "Actually Diseased"},
-                {"node": 1, "name": "Actually Healthy"},
-                {"node": 2, "name": "Classified Diseased"}
-            ],
-            "links": [
-                {"source": 1, "target": 3, "value": 6},
-                {"source": 1, "target": 2, "value": 2},
-                {"source": 0, "target": 4, "value": 0.4},
-                {"source": 0, "target": 2, "value": 2}
-            ]
-        };
+    module.bayesRuleView = function(parentEl, graph) {
 
         var margin = {top: 10, right: 20, bottom: 10, left: 10};
         var chartWidth = $(parentEl).width();

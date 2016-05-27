@@ -6,9 +6,25 @@ var disease = (function(module) {
 
         initializeInputSection();
 
-        var sankeyView = disease.sankeyView("#sankey-view");
-        var vennDiagramView = disease.vennDiagramView("#venn-diagram-view");
-        var bayesRuleView = disease.bayesRuleView("#bayes-rule-view");
+        var graph = {
+            "nodes": [
+                {"node": 0, "id": "diseased", "name": "Actually Diseased"},
+                {"node": 1, "id": "healthy", "name": "Actually Healthy"},
+                {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but they have the Disease!"},
+                {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
+                {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
+            ],
+            "links": [
+                {"source": 0, "target": 2, "value": 0.3},
+                {"source": 0, "target": 3, "value": 1},
+                {"source": 1, "target": 3, "value": 2},
+                {"source": 1, "target": 4, "value": 5}
+            ]
+        };
+
+        var sankeyView = disease.sankeyView("#sankey-view", graph);
+        var vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
+        var bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
     };
 
     /**

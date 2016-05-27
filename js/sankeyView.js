@@ -4,32 +4,19 @@ var disease = (function(module) {
     /**
      * Shows how the population is divided.
      * @param parentEl the selector for the element into which the sankeyView will be placed
+     * @param graph the data to be graphed with sankey
      */
-    module.sankeyView = function(parentEl) {
-
-        // load the data
-        var graph = {
-            "nodes": [
-                {"node": 0, "name": "Actually Diseased"},
-                {"node": 1, "name": "Actually Healthy"},
-                {"node": 2, "name": "Test negative, but they have the Disease!"},
-                {"node": 3, "name": "Test positive for the Disease"},
-                {"node": 4, "name": "Test negative and healthy"}
-            ],
-            "links": [
-                {"source": 0, "target": 2, "value": 0.3},
-                {"source": 0, "target": 3, "value": 1},
-                {"source": 1, "target": 3, "value": 2},
-                {"source": 1, "target": 4, "value": 5}
-            ]
-        };
+    module.sankeyView = function(parentEl, graph) {
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
         var chartWidth = $(parentEl).width();
         var width = chartWidth - margin.left - margin.right;
         var height = 400 - margin.top - margin.bottom;
 
-        var color = d3.scale.category20();
+        var color = d3.scale.ordinal()
+            .range(["#ff3300", "#00ee11", "#cc0044", "#eebb00", "#00ff00"])
+            .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
+
 
         // append the svg canvas to the page
         var svg = d3.select(parentEl).append("svg")
@@ -38,6 +25,7 @@ var disease = (function(module) {
             .append("g")
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
+
         var defs = svg.append("defs");
 
         // Set the sankey diagram properties
