@@ -14,6 +14,11 @@ var disease = (function(module) {
             .range(["#ff3300", "#00ee11", "#cc0044", "#eebb00", "#00ff00"])
             .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
 
+        // Set the sankey diagram properties
+        var sankey = d3.sankey()
+            .nodeWidth(20)
+            .nodePadding(50);
+
         var defs, linksEl, nodesEl;
         
         var my = {};
@@ -48,41 +53,15 @@ var disease = (function(module) {
                 .attr("height", height + margin.top + margin.bottom);
 
             // Set the sankey diagram properties
-            var sankey = d3.sankey()
-                .nodeWidth(20)
-                .nodePadding(50)
-                .size([width, height]);
-
-            var path = sankey.link();
-
             sankey
+                .size([width, height])
                 .nodes(graph.nodes)
                 .links(graph.links)
                 .layout(0);  // 32
-            
 
-            // add link gradients
-            var grads = defs.selectAll("linearGradient")
-                .data(graph.links, getLinkID);
+            var path = sankey.link();
 
-            grads.enter().append("linearGradient")
-                .attr("id", getLinkID)
-                .attr("gradientUnits", "userSpaceOnUse");
-
-
-            grads.html("") // erase any existing <stop> elements on update
-                .append("stop")
-                .attr("offset", "0%")
-                .attr("stop-color", function (d) {
-                    return nodeColor((+d.source.x <= +d.target.x) ? d.source : d.target);
-                });
-
-            grads.append("stop")
-                .attr("offset", "100%")
-                .attr("stop-color", function (d) {
-                    return nodeColor((+d.source.x > +d.target.x) ? d.source : d.target)
-                });
-            
+            addColorGradients();
 
             // add in the links
             var links = linksEl.selectAll(".link")
@@ -91,7 +70,6 @@ var disease = (function(module) {
             // ENTER
             var linkEnter = links.enter()
                 .append("path")
-                .attr("d", path)
                 .attr("class", "link");
 
             // add the link titles
@@ -102,6 +80,7 @@ var disease = (function(module) {
 
             // UPDATE
             links
+                .attr("d", path)
                 .style("stroke", function(d) {
                     return "url(#" + getLinkID(d) + ")";
                 })
@@ -111,11 +90,6 @@ var disease = (function(module) {
                 .sort(function (a, b) {
                     return b.dy - a.dy;
                 });
-                //.transition(t)
-                //    .style("stroke-width", function (d) {
-                //        return Math.max(1, d.dy);
-                //    });
-
 
 
             // add in the nodes
@@ -125,7 +99,9 @@ var disease = (function(module) {
             var nodeEnter = nodes.enter();
 
             var nodeG = nodeEnter.append("g")
-                .attr("class", "node")
+                .attr("class", "node");
+
+            nodes.select("g.node")
                 .call(d3.behavior.drag()
                     .origin(function (d) {
                         return d;
@@ -133,13 +109,13 @@ var disease = (function(module) {
                     .on("dragstart", function () {
                         this.parentNode.appendChild(this);
                     })
-                    .on("drag", dragmove));
+                    .on("drag", dragmove)
+                );
 
             nodes
                 .attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
-
 
             // add the rectangles for the nodes
             nodeG.append("rect")
@@ -179,6 +155,30 @@ var disease = (function(module) {
                 });
         };
 
+        /** add link color gradients */
+        function addColorGradients() {
+
+            var grads = defs.selectAll("linearGradient")
+                .data(graph.links, getLinkID);
+
+            grads.enter().append("linearGradient")
+                .attr("id", getLinkID)
+                .attr("gradientUnits", "userSpaceOnUse");
+
+
+            grads.html("") // erase any existing <stop> elements on update
+                .append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", function (d) {
+                    return nodeColor((+d.source.x <= +d.target.x) ? d.source : d.target);
+                });
+
+            grads.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", function (d) {
+                    return nodeColor((+d.source.x > +d.target.x) ? d.source : d.target)
+                });
+        }
 
         function getLinkID(d) {
             return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);

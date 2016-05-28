@@ -46,10 +46,10 @@ var disease = (function(module) {
         var testAccuracySlider = $("#test-accuracy-slider");
 
         probDiseasedSlider.slider({
-            value: 0.2,
+            value: 1.0,
             min: 0.1,
-            max: 1.0,
-            step: 0.01,
+            max: 10.0,
+            step: 0.1,
             height: "10px",
             slide: getSliderChangedHandler("#probability-diseased"),
             stop: clearThumbTip
@@ -57,8 +57,8 @@ var disease = (function(module) {
 
         testAccuracySlider.slider({
             value: 98.0,
-            min: 95,
-            max: 99.0,
+            min: 90,
+            max: 99.5,
             step: 0.5,
             slide: getSliderChangedHandler("#test-accuracy"),
             stop: clearThumbTip
@@ -79,7 +79,7 @@ var disease = (function(module) {
     }
 
     function updateViews() {
-        var probDiseased = parseFloat($("#probability-diseased").text());
+        var probDiseased = parseFloat($("#probability-diseased").text()) / 100.0;
         var testAccuracy = parseFloat($("#test-accuracy").text()) / 100.0;
 
         var diseasedPop = probDiseased * TOTAL_POPULATION;
@@ -95,7 +95,7 @@ var disease = (function(module) {
             {"source": 1, "target": 3, "value": testPositiveButHealthy},
             {"source": 1, "target": 4, "value": testNegAndHealthy}
         ];
-        console.log(JSON.stringify(graph.links));
+        //console.log(JSON.stringify(graph.links));
 
         renderViews();
     }
