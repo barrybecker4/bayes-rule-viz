@@ -1,4 +1,7 @@
-
+/**
+ * Modules to interactively visualize disease testing using Baye's rule
+ * https://www.mathsisfun.com/data/probability-false-negatives-positives.html
+ */
 var disease = (function(module) {
 
     var TOTAL_POPULATION;
@@ -7,7 +10,7 @@ var disease = (function(module) {
         "nodes": [
             {"node": 0, "id": "diseased", "name": "Actually Diseased"},
             {"node": 1, "id": "healthy", "name": "Actually Healthy"},
-            {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but they have the Disease!"},
+            {"node": 2, "id": "test-negative-diseased", "name": "Test negative,<br>but they have the Disease!"},
             {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
             {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
         ]
@@ -35,10 +38,10 @@ var disease = (function(module) {
 
         initializeInputSection(initialPctDiseased, initialTestAccuracy);
 
+        bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
         sankeyView = disease.sankeyView("#sankey-view", graph);
         //vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
-        //bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
-        
+
         updateViews();
 
         $(window).resize(renderViews);
@@ -63,7 +66,7 @@ var disease = (function(module) {
 
         testAccuracySlider.slider({
             value: initialTestAccuracy,
-            min: 90,
+            min: 80,
             max: 99.5,
             step: 0.5,
             slide: getSliderChangedHandler("#test-accuracy"),
@@ -107,9 +110,9 @@ var disease = (function(module) {
     }
 
     function renderViews() {
+        bayesRuleView.render();
         sankeyView.render();
         //vennDiagramView.render();
-        //bayesRuleView.render();
     }
 
     function clearThumbTip() {

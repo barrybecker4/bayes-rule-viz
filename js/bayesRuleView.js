@@ -4,58 +4,84 @@ var disease = (function(module) {
     /**
      *
      * @param parentEl the selector for the element into which the bayesRuleView will be placed.
+     * @param graph data
      */
     module.bayesRuleView = function(parentEl, graph) {
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
+        var colorScale = d3.scale.ordinal()
+            .range(["#ff3300", "#00ee11", "#cc0044", "#eebb00", "#00ff00"])
+            .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
+
+        // Set the sankey diagram properties
+        var sankey = d3.sankey()
+            .nodeWidth(20)
+            .nodePadding(50);
+
+        var defs, linksEl, nodesEl;
+
         var my = {};
 
+
+        /** Add the initial svg structure */
         function init() {
-            my.render();
+            // append the svg canvas to the page
+            var svg = d3.selectAll(parentEl).append("svg")
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            defs = svg.append("defs");
+            linksEl = svg.append("g");
+            nodesEl = svg.append("g");
         }
 
+
+        /** update the sanky diagram */
         my.render = function() {
             var chartWidth = $(parentEl).width();
             var width = chartWidth - margin.left - margin.right;
             var height = 400 - margin.top - margin.bottom;
-
-            var color = d3.scale.ordinal()
-                .range(["#ff3300", "#00ee11", "#cc0044", "#eebb00", "#00ff00"])
-                .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
-
+            var t = d3.transition().duration(500);
 
             // append the svg canvas to the page
-            var svg = d3.selectAll(parentEl).data([0]).enter().append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-
-            var defs = svg.append("defs");
+            var svg = d3.select(parentEl + " svg")
+                .attr("width", chartWidth)
+                .attr("height", height + margin.top + margin.bottom);
 
             // Set the sankey diagram properties
-            var sankey = d3.sankey()
-                .nodeWidth(20)
-                .nodePadding(50)
-                .size([width, height]);
+            sankey
+                .size([width, height])
+                .nodes(graph.nodes)
+                .links(graph.links)
+                .layout(0);  // 32
 
             var path = sankey.link();
 
-            sankey
-                .nodes(graph.nodes)
-                .links(graph.links)
-                .layout(32);
+            addColorGradients();
 
             // add in the links
-            var link = svg.append("g").selectAll(".link")
-                .data(graph.links)
-                .enter().append("path")
-                .attr("class", "link")
+            var links = linksEl.selectAll(".link")
+                .data(graph.links, getLinkID);
+
+            // ENTER
+            var linkEnter = links.enter()
+                .append("path")
+                .attr("class", "link");
+
+            // add the link titles
+            linkEnter.append("title")
+                .text(function (d) {
+                    return d.source.name + " -> " + d.target.name;
+                });
+
+            // UPDATE
+            links
                 .attr("d", path)
-                // has bug for now
-                .style("stroke", function(d) { return "url(#" + getLinkID(d) + ")"; })
+                .style("stroke", function(d) {
+                    return "url(#" + getLinkID(d) + ")";
+                })
                 .style("stroke-width", function (d) {
                     return Math.max(1, d.dy);
                 })
@@ -63,7 +89,73 @@ var disease = (function(module) {
                     return b.dy - a.dy;
                 });
 
-            // add link gradients
+
+            // add in the nodes
+            var nodes = nodesEl.selectAll(".node").data(graph.nodes);
+
+            // ENTER
+            var nodeEnter = nodes.enter();
+
+            var nodeG = nodeEnter.append("g")
+                .attr("class", "node");
+
+            nodes.select("g.node")
+                .call(d3.behavior.drag()
+                    .origin(function (d) {
+                        return d;
+                    })
+                    .on("dragstart", function () {
+                        this.parentNode.appendChild(this);
+                    })
+                    .on("drag", dragmove)
+                );
+
+            nodes
+                .attr("transform", function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+
+            // add the rectangles for the nodes
+            nodeG.append("rect")
+                .attr("width", sankey.nodeWidth())
+                .style("fill", nodeColor)
+                .style("stroke", function (d) {
+                    return d3.rgb(d.color).darker(1);
+                })
+                .append("title")
+                .text(function (d) {
+                    return d.name + "\n" + d.value;
+                });
+
+            nodes.select("rect")
+                .attr("height", function (d) {
+                    return d.dy;
+                });
+
+            // add in the title for the nodes
+            nodeG.append("text")
+                .attr("x", -6)
+                .attr("dy", ".35em")
+                .attr("text-anchor", "end")
+                .attr("transform", null)
+                .text(function (d) {
+                    return d.name;
+                })
+                .filter(function (d) {
+                    return d.x < width / 2;
+                })
+                .attr("x", 6 + sankey.nodeWidth())
+                .attr("text-anchor", "start");
+
+            nodes.select("text")
+                .attr("y", function (d) {
+                    return d.dy / 2;
+                });
+        };
+
+        /** add link color gradients */
+        function addColorGradients() {
+
             var grads = defs.selectAll("linearGradient")
                 .data(graph.links, getLinkID);
 
@@ -84,76 +176,20 @@ var disease = (function(module) {
                 .attr("stop-color", function (d) {
                     return nodeColor((+d.source.x > +d.target.x) ? d.source : d.target)
                 });
+        }
 
-            function getLinkID(d) {
-                return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);
-            }
+        function getLinkID(d) {
+            return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);
+        }
 
-            function nodeColor(d) {
-                return d.color = color(makeValid(d.name));
-            }
+        function nodeColor(d) {
+            return d.color = colorScale(makeValid(d.name));
+        }
 
-            function makeValid(s) {
-                return s.replace(/ /g, "").replace(/,/g, "");
-            }
+        function makeValid(s) {
+            return s.replace(/ /g, "").replace(/,/g, "");
+        }
 
-
-            // add the link titles
-            link.append("title")
-                .text(function (d) {
-                    return d.source.name + " → " + d.target.name;
-                });
-
-            // add in the nodes
-            var node = svg.append("g").selectAll(".node")
-                .data(graph.nodes)
-                .enter().append("g")
-                .attr("class", "node")
-                .attr("transform", function (d) {
-                    return "translate(" + d.x + "," + d.y + ")";
-                })
-                .call(d3.behavior.drag()
-                    .origin(function (d) {
-                        return d;
-                    })
-                    .on("dragstart", function () {
-                        this.parentNode.appendChild(this);
-                    })
-                    .on("drag", dragmove));
-
-            // add the rectangles for the nodes
-            node.append("rect")
-                .attr("height", function (d) {
-                    return d.dy;
-                })
-                .attr("width", sankey.nodeWidth())
-                .style("fill", nodeColor)
-                .style("stroke", function (d) {
-                    return d3.rgb(d.color).darker(1);
-                })
-                .append("title")
-                .text(function (d) {
-                    return d.name + "\n" + d.value;
-                });
-
-            // add in the title for the nodes
-            node.append("text")
-                .attr("x", -6)
-                .attr("y", function (d) {
-                    return d.dy / 2;
-                })
-                .attr("dy", ".35em")
-                .attr("text-anchor", "end")
-                .attr("transform", null)
-                .text(function (d) {
-                    return d.name;
-                })
-                .filter(function (d) {
-                    return d.x < width / 2;
-                })
-                .attr("x", 6 + sankey.nodeWidth())
-                .attr("text-anchor", "start");
-        };
 
         // the function for moving the nodes
         function dragmove(d) {

@@ -57,15 +57,17 @@ var disease = (function(module) {
                 .links(graph.links)
                 .layout(0);  // 32
 
+            addColorGradients();
+            addLinks();
+            addNodes(width);
+        };
+
+        function addLinks() {
             var path = sankey.link();
 
-            addColorGradients();
-
-            // add in the links
             var links = linksEl.selectAll(".link")
                 .data(graph.links, getLinkID);
 
-            // ENTER
             var linkEnter = links.enter()
                 .append("path")
                 .attr("class", "link");
@@ -76,7 +78,6 @@ var disease = (function(module) {
                     return d.source.name + " -> " + d.target.name;
                 });
 
-            // UPDATE
             links
                 .attr("d", path)
                 .style("stroke", function(d) {
@@ -88,12 +89,11 @@ var disease = (function(module) {
                 .sort(function (a, b) {
                     return b.dy - a.dy;
                 });
+        }
 
-
-            // add in the nodes
+        function addNodes(width) {
             var nodes = nodesEl.selectAll(".node").data(graph.nodes);
 
-            // ENTER
             var nodeEnter = nodes.enter();
 
             var nodeG = nodeEnter.append("g")
@@ -151,7 +151,7 @@ var disease = (function(module) {
                 .attr("y", function (d) {
                     return d.dy / 2;
                 });
-        };
+        }
 
         /** add link color gradients */
         function addColorGradients() {
