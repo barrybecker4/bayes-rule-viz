@@ -10,30 +10,36 @@ var disease = (function(module) {
             {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but they have the Disease!"},
             {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
             {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
-        ],
-        "links": [
-            {"source":0, "target":2, "value":42},
-            {"source":0, "target":3, "value":2058},
-            {"source":1, "target":3, "value":158},
-            {"source":1, "target":4, "value":7742}
         ]
     };
+
 
     var sankeyView, vennDiagramView, bayesRuleView;
 
 
-    /** Initialize the module */
-    module.init = function(totalPopulation) {
+    /**
+     * Initialize the module
+     * @param totalPopulation - a number in the range [100, 1,000,000,000,000]
+     * @param initialPctDiseased - probability of having the disease. In range [0.1, 10]
+     * @param initialTestAccuracy - percent of time that the test is correct. In range [90, 99.5]
+     */
+    module.init = function(totalPopulation, initialPctDiseased, initialTestAccuracy) {
 
+        initialPctDiseased = initialPctDiseased ? initialPctDiseased : 1;
+        initialTestAccuracy = initialTestAccuracy ? initialTestAccuracy : 95;
         TOTAL_POPULATION = totalPopulation;
 
         $("#total-population").text(TOTAL_POPULATION.toLocaleString());
+        $("#probability-diseased").text(initialPctDiseased);
+        $("#test-accuracy").text(initialTestAccuracy);
 
-        initializeInputSection();
+        initializeInputSection(initialPctDiseased, initialTestAccuracy);
 
         sankeyView = disease.sankeyView("#sankey-view", graph);
         //vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
         //bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
+        
+        updateViews();
 
         $(window).resize(renderViews);
     };
@@ -41,12 +47,12 @@ var disease = (function(module) {
     /**
      * Show two sliders that allow changing the incidence and accuracy.
      */
-    function initializeInputSection() {
+    function initializeInputSection(initialPctDiseased, initialTestAccuracy) {
         var probDiseasedSlider = $("#probability-diseased-slider");
         var testAccuracySlider = $("#test-accuracy-slider");
 
         probDiseasedSlider.slider({
-            value: 1.0,
+            value: initialPctDiseased,
             min: 0.1,
             max: 10.0,
             step: 0.1,
@@ -56,7 +62,7 @@ var disease = (function(module) {
         });
 
         testAccuracySlider.slider({
-            value: 98.0,
+            value: initialTestAccuracy,
             min: 90,
             max: 99.5,
             step: 0.5,

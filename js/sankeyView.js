@@ -10,7 +10,7 @@ var disease = (function(module) {
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
-        var color = d3.scale.ordinal()
+        var colorScale = d3.scale.ordinal()
             .range(["#ff3300", "#00ee11", "#cc0044", "#eebb00", "#00ff00"])
             .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
 
@@ -35,8 +35,6 @@ var disease = (function(module) {
             defs = svg.append("defs");
             linksEl = svg.append("g");
             nodesEl = svg.append("g");
-
-            my.render();
         }
 
 
@@ -185,7 +183,7 @@ var disease = (function(module) {
         }
 
         function nodeColor(d) {
-            return d.color = color(makeValid(d.name));
+            return d.color = colorScale(makeValid(d.name));
         }
 
         function makeValid(s) {
