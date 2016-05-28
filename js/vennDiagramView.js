@@ -25,7 +25,7 @@ var disease = (function(module) {
 
 
             // append the svg canvas to the page
-            var svg = d3.select(parentEl).append("svg")
+            var svg = d3.selectAll(parentEl).data([0]).enter().append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .append("g")

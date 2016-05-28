@@ -10,31 +10,42 @@ var disease = (function(module) {
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
+        var color = d3.scale.ordinal()
+            .range(["#ff3300", "#00ee11", "#cc0044", "#eebb00", "#00ff00"])
+            .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
+
+        var defs, linksEl, nodesEl;
+        
         var my = {};
 
+
+        /** Add the initial svg structure */
         function init() {
+            // append the svg canvas to the page
+            var svg = d3.selectAll(parentEl).append("svg")
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            defs = svg.append("defs");
+            linksEl = svg.append("g");
+            nodesEl = svg.append("g");
+
             my.render();
         }
 
+
+        /** update the sanky diagram */
         my.render = function() {
             var chartWidth = $(parentEl).width();
             var width = chartWidth - margin.left - margin.right;
             var height = 400 - margin.top - margin.bottom;
-
-            var color = d3.scale.ordinal()
-                .range(["#ff3300", "#00ee11", "#cc0044", "#eebb00", "#00ff00"])
-                .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
-
+            var t = d3.transition().duration(500);
 
             // append the svg canvas to the page
-            var svg = d3.select(parentEl).append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-
-            var defs = svg.append("defs");
+            var svg = d3.select(parentEl + " svg")
+                .attr("width", chartWidth)
+                .attr("height", height + margin.top + margin.bottom);
 
             // Set the sankey diagram properties
             var sankey = d3.sankey()
@@ -47,22 +58,8 @@ var disease = (function(module) {
             sankey
                 .nodes(graph.nodes)
                 .links(graph.links)
-                .layout(32);
-
-            // add in the links
-            var link = svg.append("g").selectAll(".link")
-                .data(graph.links)
-                .enter().append("path")
-                .attr("class", "link")
-                .attr("d", path)
-                // has bug for now
-                .style("stroke", function(d) { return "url(#" + getLinkID(d) + ")"; })
-                .style("stroke-width", function (d) {
-                    return Math.max(1, d.dy);
-                })
-                .sort(function (a, b) {
-                    return b.dy - a.dy;
-                });
+                .layout(0);  // 32
+            
 
             // add link gradients
             var grads = defs.selectAll("linearGradient")
@@ -85,34 +82,50 @@ var disease = (function(module) {
                 .attr("stop-color", function (d) {
                     return nodeColor((+d.source.x > +d.target.x) ? d.source : d.target)
                 });
+            
 
-            function getLinkID(d) {
-                return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);
-            }
+            // add in the links
+            var links = linksEl.selectAll(".link")
+                .data(graph.links, getLinkID);
 
-            function nodeColor(d) {
-                return d.color = color(makeValid(d.name));
-            }
-
-            function makeValid(s) {
-                return s.replace(/ /g, "").replace(/,/g, "");
-            }
-
+            // ENTER
+            var linkEnter = links.enter()
+                .append("path")
+                .attr("d", path)
+                .attr("class", "link");
 
             // add the link titles
-            link.append("title")
+            linkEnter.append("title")
                 .text(function (d) {
-                    return d.source.name + " → " + d.target.name;
+                    return d.source.name + " -> " + d.target.name;
                 });
 
-            // add in the nodes
-            var node = svg.append("g").selectAll(".node")
-                .data(graph.nodes)
-                .enter().append("g")
-                .attr("class", "node")
-                .attr("transform", function (d) {
-                    return "translate(" + d.x + "," + d.y + ")";
+            // UPDATE
+            links
+                .style("stroke", function(d) {
+                    return "url(#" + getLinkID(d) + ")";
                 })
+                .style("stroke-width", function (d) {
+                    return Math.max(1, d.dy);
+                })
+                .sort(function (a, b) {
+                    return b.dy - a.dy;
+                });
+                //.transition(t)
+                //    .style("stroke-width", function (d) {
+                //        return Math.max(1, d.dy);
+                //    });
+
+
+
+            // add in the nodes
+            var nodes = nodesEl.selectAll(".node").data(graph.nodes);
+
+            // ENTER
+            var nodeEnter = nodes.enter();
+
+            var nodeG = nodeEnter.append("g")
+                .attr("class", "node")
                 .call(d3.behavior.drag()
                     .origin(function (d) {
                         return d;
@@ -122,11 +135,14 @@ var disease = (function(module) {
                     })
                     .on("drag", dragmove));
 
+            nodes
+                .attr("transform", function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+
+
             // add the rectangles for the nodes
-            node.append("rect")
-                .attr("height", function (d) {
-                    return d.dy;
-                })
+            nodeG.append("rect")
                 .attr("width", sankey.nodeWidth())
                 .style("fill", nodeColor)
                 .style("stroke", function (d) {
@@ -137,12 +153,14 @@ var disease = (function(module) {
                     return d.name + "\n" + d.value;
                 });
 
+            nodes.select("rect")
+                .attr("height", function (d) {
+                    return d.dy;
+                });
+
             // add in the title for the nodes
-            node.append("text")
+            nodeG.append("text")
                 .attr("x", -6)
-                .attr("y", function (d) {
-                    return d.dy / 2;
-                })
                 .attr("dy", ".35em")
                 .attr("text-anchor", "end")
                 .attr("transform", null)
@@ -154,7 +172,26 @@ var disease = (function(module) {
                 })
                 .attr("x", 6 + sankey.nodeWidth())
                 .attr("text-anchor", "start");
+
+            nodes.select("text")
+                .attr("y", function (d) {
+                    return d.dy / 2;
+                });
         };
+
+
+        function getLinkID(d) {
+            return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);
+        }
+
+        function nodeColor(d) {
+            return d.color = color(makeValid(d.name));
+        }
+
+        function makeValid(s) {
+            return s.replace(/ /g, "").replace(/,/g, "");
+        }
+
 
         // the function for moving the nodes
         function dragmove(d) {

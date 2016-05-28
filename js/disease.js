@@ -3,6 +3,25 @@ var disease = (function(module) {
 
     var TOTAL_POPULATION;
 
+    var graph = {
+        "nodes": [
+            {"node": 0, "id": "diseased", "name": "Actually Diseased"},
+            {"node": 1, "id": "healthy", "name": "Actually Healthy"},
+            {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but they have the Disease!"},
+            {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
+            {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
+        ],
+        "links": [
+            {"source":0, "target":2, "value":42},
+            {"source":0, "target":3, "value":2058},
+            {"source":1, "target":3, "value":158},
+            {"source":1, "target":4, "value":7742}
+        ]
+    };
+
+    var sankeyView, vennDiagramView, bayesRuleView;
+
+
     /** Initialize the module */
     module.init = function(totalPopulation) {
 
@@ -12,41 +31,23 @@ var disease = (function(module) {
 
         initializeInputSection();
 
-        var graph = {
-            "nodes": [
-                {"node": 0, "id": "diseased", "name": "Actually Diseased"},
-                {"node": 1, "id": "healthy", "name": "Actually Healthy"},
-                {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but they have the Disease!"},
-                {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
-                {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
-            ],
-            "links": [
-                {"source": 0, "target": 2, "value": 0.3},
-                {"source": 0, "target": 3, "value": 1},
-                {"source": 1, "target": 3, "value": 2},
-                {"source": 1, "target": 4, "value": 5}
-            ]
-        };
+        sankeyView = disease.sankeyView("#sankey-view", graph);
+        //vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
+        //bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
 
-        var sankeyView = disease.sankeyView("#sankey-view", graph);
-        var vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
-        var bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
+        $(window).resize(renderViews);
     };
 
     /**
      * Show two sliders that allow changing the incidence and accuracy.
-     *
-     * TODO:
-     *  - add jquery ui images to lib/images
-     *  - update views when params change and rerender
      */
     function initializeInputSection() {
         var probDiseasedSlider = $("#probability-diseased-slider");
         var testAccuracySlider = $("#test-accuracy-slider");
 
         probDiseasedSlider.slider({
-            value: 0.1,
-            min: 0.01,
+            value: 0.2,
+            min: 0.1,
             max: 1.0,
             step: 0.01,
             height: "10px",
@@ -55,10 +56,10 @@ var disease = (function(module) {
         });
 
         testAccuracySlider.slider({
-            value: 99.0,
+            value: 98.0,
             min: 95,
-            max: 100.0,
-            step: 0.1,
+            max: 99.0,
+            step: 0.5,
             slide: getSliderChangedHandler("#test-accuracy"),
             stop: clearThumbTip
         });
@@ -79,13 +80,30 @@ var disease = (function(module) {
 
     function updateViews() {
         var probDiseased = parseFloat($("#probability-diseased").text());
-        var testAccuracy = parseFloat($("#test-accuracy").text());
+        var testAccuracy = parseFloat($("#test-accuracy").text()) / 100.0;
 
         var diseasedPop = probDiseased * TOTAL_POPULATION;
+        var healthyPop = TOTAL_POPULATION - diseasedPop;
+        var testNegAndHealthy = testAccuracy * healthyPop;
+        var testNegButDiseased = (1.0 - testAccuracy) * diseasedPop;
+        var testPositiveAndDiseased = diseasedPop - testNegButDiseased;
+        var testPositiveButHealthy = healthyPop - testNegAndHealthy;
 
-        // TODO calcs
+        graph.links = [
+            {"source": 0, "target": 2, "value": testNegButDiseased},
+            {"source": 0, "target": 3, "value": testPositiveAndDiseased},
+            {"source": 1, "target": 3, "value": testPositiveButHealthy},
+            {"source": 1, "target": 4, "value": testNegAndHealthy}
+        ];
+        console.log(JSON.stringify(graph.links));
 
+        renderViews();
+    }
 
+    function renderViews() {
+        sankeyView.render();
+        //vennDiagramView.render();
+        //bayesRuleView.render();
     }
 
     function clearThumbTip() {
