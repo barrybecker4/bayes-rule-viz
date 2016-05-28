@@ -53,6 +53,10 @@ body {
     //border: 1px solid blue;
 }
 
+.bayes-rule-exp {
+    border: 1px solid blue;
+}
+
 .ui-slider-horizontal {
     margin-top: 2px;
     height: 10px;
