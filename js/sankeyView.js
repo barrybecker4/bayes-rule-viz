@@ -92,6 +92,14 @@ var disease = (function(module) {
                 });
         }
 
+        /**
+         * consider foreign object for html styling
+         * <foreignobject x="10" y="10" width="100" height="150">
+         *   <body xmlns="http://www.w3.org/1999/xhtml">
+         *   <div>Here is a <strong>paragraph</strong> that requires <em>word wrap</em></div>
+         *  </body>
+         * @param width width of the chart
+         */
         function addNodes(width) {
             var nodes = nodesEl.selectAll(".node").data(graph.nodes);
 
