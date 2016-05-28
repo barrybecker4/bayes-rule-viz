@@ -41,14 +41,15 @@ var disease = (function(module) {
         /** update the sanky diagram */
         my.render = function() {
             var chartWidth = $(parentEl).width();
+            var chartHeight = $(parentEl).height();
             var width = chartWidth - margin.left - margin.right;
-            var height = 400 - margin.top - margin.bottom;
+            var height = chartHeight - margin.top - margin.bottom;
             var t = d3.transition().duration(500);
 
             // append the svg canvas to the page
             var svg = d3.select(parentEl + " svg")
                 .attr("width", chartWidth)
-                .attr("height", height + margin.top + margin.bottom);
+                .attr("height", chartHeight);
 
             // Set the sankey diagram properties
             sankey
@@ -124,7 +125,7 @@ var disease = (function(module) {
                 })
                 .append("title")
                 .text(function (d) {
-                    return d.name + "\n" + d.value;
+                    return d.name + "\n" + d.value.toLocaleString();
                 });
 
             nodes.select("rect")
