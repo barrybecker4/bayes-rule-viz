@@ -20,6 +20,8 @@ var disease = (function(module) {
             .nodePadding(50);
 
         var defs, linksEl, nodesEl;
+        var width, height;
+        var links;
         
         var my = {};
 
@@ -42,8 +44,8 @@ var disease = (function(module) {
         my.render = function() {
             var chartWidth = $(parentEl).width();
             var chartHeight = $(parentEl).height();
-            var width = chartWidth - margin.left - margin.right;
-            var height = chartHeight - margin.top - margin.bottom;
+            width = chartWidth - margin.left - margin.right;
+            height = chartHeight - margin.top - margin.bottom;
             var t = d3.transition().duration(500);
 
             // append the svg canvas to the page
@@ -60,13 +62,13 @@ var disease = (function(module) {
 
             addColorGradients();
             addLinks();
-            addNodes(width);
+            addNodes();
         };
 
         function addLinks() {
-            var path = sankey.link();
 
-            var links = linksEl.selectAll(".link")
+
+            links = linksEl.selectAll(".link")
                 .data(graph.links, getLinkID);
 
             var linkEnter = links.enter()
@@ -79,6 +81,7 @@ var disease = (function(module) {
                     return d.source.name + " -> " + d.target.name;
                 });
 
+            var path = sankey.link();
             links
                 .attr("d", path)
                 .style("stroke", function(d) {
@@ -98,9 +101,8 @@ var disease = (function(module) {
          *   <body xmlns="http://www.w3.org/1999/xhtml">
          *   <div>Here is a <strong>paragraph</strong> that requires <em>word wrap</em></div>
          *  </body>
-         * @param width width of the chart
          */
-        function addNodes(width) {
+        function addNodes() {
             var nodes = nodesEl.selectAll(".node").data(graph.nodes);
 
             var nodeEnter = nodes.enter();
@@ -108,21 +110,21 @@ var disease = (function(module) {
             var nodeG = nodeEnter.append("g")
                 .attr("class", "node");
 
-            nodes.select("g.node")
-                .call(d3.behavior.drag()
-                    .origin(function (d) {
-                        return d;
-                    })
-                    .on("dragstart", function () {
-                        this.parentNode.appendChild(this);
-                    })
-                    .on("drag", dragmove)
-                );
 
-            nodes
-                .attr("transform", function (d) {
+            nodes.attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
+
+            var drag = d3.behavior.drag()
+                .origin(function (d) {
+                    return d;
+                })
+                .on("dragstart", function () {
+                    this.parentNode.appendChild(this);
+                })
+                .on("drag", dragmove);
+
+            nodeG.call(drag);
 
             // add the rectangles for the nodes
             nodeG.append("rect")
@@ -207,7 +209,8 @@ var disease = (function(module) {
                     d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
                 ) + ")");
             sankey.relayout();
-            link.attr("d", path);
+            var path = sankey.link();
+            links.attr("d", path);
         }
 
         init();
