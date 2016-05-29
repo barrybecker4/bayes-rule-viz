@@ -19,39 +19,25 @@ var disease = (function(module) {
             root = $(parentEl);
         }
 
+
         /** update the sanky diagram */
         my.render = function() {
-            root.html("<div>p(D|positive) = p(D)p(positive|D) </div>" +
-                "<div>" +
-                '<math xmlns="http://www.w3.org/1998/Math/MathML">' +
-                '   <mi>a</mi><mo>&#x2260;</mo><mn>0</mn>' +
-                '</math>' +
-                "</div>" +
-                '<math xmlns="http://www.w3.org/1998/Math/MathML">' +
-                "<mi>a</mi><msup><mi>x</mi><mn>2</mn></msup>" +
-                "<mo>+</mo> <mi>b</mi><mi>x</mi>" +
-                "<mo>+</mo> <mi>c</mi> <mo>=</mo> <mn>0</mn>" +
-                "</math>" +
-                '<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">' +
-                "<mi>x</mi> <mo>=</mo><mrow><mfrac><mrow>" +
-                "<mo>&#x2212;</mo><mi>b</mi><mo>&#x00B1;</mo>" +
-                "<msqrt><msup><mi>b</mi><mn>2</mn></msup><mo>&#x2212;</mo><mn>4</mn><mi>a</mi><mi>c</mi></msqrt>" +
-                "</mrow>" +
-                "<mrow> <mn>2</mn><mi>a</mi> </mrow>" +
-                "</mfrac></mrow>" +
-                "</math>" +
-                "<div style='font-size: 150%;'>$$" +
-                "\\definecolor{energy}{RGB}{114,0,172} " +
-                "\\definecolor{freq}{RGB}{45,177,93} " +
-                "\\definecolor{spin}{RGB}{251,0,29} " +
-                "\\definecolor{signal}{RGB}{18,110,213} " +
-                "\\definecolor{circle}{RGB}{217,86,16} " +
-                "\\definecolor{average}{RGB}{203,23,206} " +
-                "\\color{energy} X_{\\color{freq} k} \\color{black} = " +
-                "\\color{average} \\frac{1}{N} \\sum_{n=0}^{N-1}" +
-                "\\color{signal}x_n \\color{spin}e^{\\mathrm{i} \\color{circle} 2\\pi \\color{freq}k \\color{average} \\frac{n}{N}}" +
-            "$$" +
-                "</div>");
+
+            var bayeRuleExp = $("" +
+                '<table class="fraction" align="center" cellpadding="0" cellspacing="0">' +
+                '<tr>' +
+                '<td rowspan="2" nowrap="nowrap"> x&nbsp; = &nbsp;</td>' +
+                '<td nowrap="nowrap"> p(B) p(A|B) </td>' +
+                '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>' +
+                '<td nowrap="nowrap"> x<sup>2</sup> + x + 1 </td>' +
+                '</tr>' +
+                '<tr>' +
+                '<td class="upper_line">2 cos(<i>x</i>)</td>' +
+                '<td class="upper_line">5 sin(<i>x</i>)</td>' +
+                '</tr>' +
+                '</table>');
+
+            root.append(bayeRuleExp);
         };
 
         init();

@@ -57,6 +57,10 @@ body {
     border: 1px solid blue;
 }
 
+td.upper_line { border-top:solid 1px black; }
+table.fraction { text-align: center; vertical-align: middle;
+    margin-top:0.5em; margin-bottom:0.5em; line-height: 2em; }
+
 .ui-slider-horizontal {
     margin-top: 2px;
     height: 10px;
