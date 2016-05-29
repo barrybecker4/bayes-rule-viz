@@ -4,6 +4,8 @@
  */
 var disease = (function(module) {
 
+    module.POSITIVE_COLOR = "#eebb00";
+    
     var TOTAL_POPULATION;
 
     var graph = {
