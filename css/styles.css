@@ -29,13 +29,13 @@ body {
 #sankey-view {
     float: right;
     width: 50%;
-    height: 400px;
+    height: 600px;
     //border: 1px solid red;
 }
 #venn-diagram-view {
     float: left;
     width: 50%;
-    height: 400px;
+    height: 600px;
     //border: 1px solid blue;
 }
 

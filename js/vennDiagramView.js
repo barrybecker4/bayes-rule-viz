@@ -1,4 +1,3 @@
-
 var disease = (function(module) {
 
     /**
@@ -27,23 +26,22 @@ var disease = (function(module) {
 
             svg.append("circle")
                 .attr("class", "population-circle")
-                .attr("cx", 150).attr("cy", 150).attr("r", 200)
                 .attr("opacity", 0.6).attr("fill", "#eeff00");
             svg.append("circle")
                 .attr("class", "test-positive-circle")
-                .attr("cx", 260).attr("cy", 110).attr("r", 120)
                 .attr("opacity", 0.6).attr("fill", "#ddbb00");
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("cx", 320).attr("cy", 160).attr("r", 60)
                 .attr("opacity", 0.6).attr("fill", "#dd0000");
         }
 
 
-        /** update the sanky diagram */
+        /** update the Venn diagram */
         my.render = function() {
             var chartWidth = $(parentEl).width();
             var chartHeight = $(parentEl).height();
+            var chartWidthD2 = chartWidth / 2;
+            var chartHeightD2 = chartHeight / 2;
 
             var svg = d3.select(parentEl + " svg")
                 .attr("width", chartWidth)
@@ -52,18 +50,24 @@ var disease = (function(module) {
             var bayesRule = $(".bayes-rule-exp");
             var numPositiveAndDiseased = graph.links[1].value;
             var numPositiveAndHealthy =  graph.links[2].value;
-            var numDiseased = graph.links[0].value + numPositiveAndDiseased;
+            var testNegButDiseased = graph.links[0].value;
+            var numDiseased = testNegButDiseased + numPositiveAndDiseased;
             var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
-            var probPositiveGivenDiseased = numPositiveAndDiseased / numDiseased;
-            //var probDiseasedGivenPositive = (100 * numDiseased * probPositiveGivenDiseased) / numPositive;
 
             var testPositiveRad = 128;
-            var scaleFactor = totalPopulation / numPositive;
+            var scaleFactor = Math.sqrt(totalPopulation / numPositive);
             var diseasedRad = testPositiveRad * numDiseased / numPositive;
+            var popRad = testPositiveRad * scaleFactor;
 
-            svg.select("circle.population-circle").attr("r", testPositiveRad * scaleFactor);
-            svg.select("circle.test-positive-circle").attr("r", testPositiveRad);
-            svg.select("circle.diseased-circle").attr("r", diseasedRad);
+            svg.select("circle.population-circle")
+                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40).attr("cy", chartHeightD2)
+                .attr("r", popRad);
+            svg.select("circle.test-positive-circle")
+                .attr("cx", chartWidthD2 + testPositiveRad).attr("cy", chartHeightD2)
+                .attr("r", testPositiveRad);
+            svg.select("circle.diseased-circle")
+                .attr("cx", chartWidthD2 + testPositiveRad).attr("cy", chartHeightD2 - testPositiveRad)
+                .attr("r", diseasedRad);
         };
 
         /**
