@@ -1,6 +1,7 @@
 
-.bayes-rule-exp {
-    border: 1px solid blue;
+table.bayes-rule-exp {
+    padding:15px;
+    //border: 1px solid blue;
 }
 
 td.upper_line { border-top:solid 1px black; }

@@ -17,27 +17,33 @@ var disease = (function(module) {
         /** Add the initial svg structure */
         function init() {
             root = $(parentEl);
+            createExpression();
         }
 
-
-        /** update the sanky diagram */
-        my.render = function() {
-
+        function createExpression() {
             var bayeRuleExp = $("" +
-                '<table class="fraction" align="center" cellpadding="0" cellspacing="0">' +
+                '<table class="bayes-rule-exp" align="center" cellpadding="0" cellspacing="0">' +
                 '<tr>' +
-                '<td rowspan="2" nowrap="nowrap"> x&nbsp; = &nbsp;</td>' +
-                '<td nowrap="nowrap"> p(B) p(A|B) </td>' +
+                '<td rowspan="2" nowrap="nowrap"> p(D | positive)&nbsp; = &nbsp;</td>' +
+                '<td nowrap="nowrap"> p(D) &nbsp; p(positive | D) </td>' +
                 '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>' +
-                '<td nowrap="nowrap"> x<sup>2</sup> + x + 1 </td>' +
+                '<td nowrap="nowrap">23 * 989</td>' +
+                '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp; 7.34%</td>' +
+                '<td rowspan="2" nowrap="nowrap" width="100%"> &nbsp;</td>' +
                 '</tr>' +
                 '<tr>' +
-                '<td class="upper_line">2 cos(<i>x</i>)</td>' +
-                '<td class="upper_line">5 sin(<i>x</i>)</td>' +
+                '<td class="upper_line">p(positive)</td>' +
+                '<td class="upper_line">1234</td>' +
                 '</tr>' +
                 '</table>');
 
             root.append(bayeRuleExp);
+        }
+
+        /** update the sanky diagram */
+        my.render = function() {
+
+
         };
 
         init();
