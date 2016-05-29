@@ -13,8 +13,7 @@ var disease = (function(module) {
         var colorScale = d3.scale.ordinal()
             .range(["#ff3300", "#00ee11", "#cc0044", disease.POSITIVE_COLOR, "#00ff00"])
             .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
-
-        // Set the sankey diagram properties
+        
         var sankey = d3.sankey()
             .nodeWidth(20)
             .nodePadding(50);
@@ -28,7 +27,6 @@ var disease = (function(module) {
 
         /** Add the initial svg structure */
         function init() {
-            // append the svg canvas to the page
             var svg = d3.selectAll(parentEl).append("svg")
                 .append("g")
                 .attr("transform",
@@ -66,8 +64,6 @@ var disease = (function(module) {
         };
 
         function addLinks() {
-
-
             links = linksEl.selectAll(".link")
                 .data(graph.links, getLinkID);
 
@@ -109,7 +105,6 @@ var disease = (function(module) {
 
             var nodeG = nodeEnter.append("g")
                 .attr("class", "node");
-
 
             nodes.attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";

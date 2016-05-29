@@ -40,9 +40,8 @@ var disease = (function(module) {
         initializeInputSection(initialPctDiseased, initialTestAccuracy);
 
         bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
+        vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph, TOTAL_POPULATION);
         sankeyView = disease.sankeyView("#sankey-view", graph);
-        vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
-
         updateViews();
 
         $(window).resize(renderViews);

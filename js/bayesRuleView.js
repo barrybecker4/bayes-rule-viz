@@ -42,14 +42,6 @@ var disease = (function(module) {
         /** update the Bayes rule formula with the current numbers */
         my.render = function() {
 
-            /*
-            graph.links = [
-                {"source": 0, "target": 2, "value": testNegButDiseased},
-                {"source": 0, "target": 3, "value": testPositiveAndDiseased},
-                {"source": 1, "target": 3, "value": testPositiveButHealthy},
-                {"source": 1, "target": 4, "value": testNegAndHealthy}
-            ];*/
-
             var bayesRule = $(".bayes-rule-exp");
             var numPositiveAndDiseased = graph.links[1].value;
             var numPositiveAndHealthy =  graph.links[2].value;

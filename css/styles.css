@@ -27,17 +27,15 @@ body {
     //border: 1px solid blue;
 }
 #sankey-view {
-    float: left;
-    width: 50%;
-    height: 400px;
-    //padding: 2px;
-    //border: 1px solid red;
-}
-#venn-diagram-view {
     float: right;
     width: 50%;
     height: 400px;
-    //padding: 2px;
+    //border: 1px solid red;
+}
+#venn-diagram-view {
+    float: left;
+    width: 50%;
+    height: 400px;
     //border: 1px solid blue;
 }
 
