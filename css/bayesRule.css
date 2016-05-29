@@ -14,5 +14,16 @@ td.numerator {
     white-space: nowrap;
     padding: 3px;
 }
+
 table.fraction { text-align: center; vertical-align: middle;
     margin-top:0.5em; margin-bottom:0.5em; line-height: 2em; }
+
+.prob-diseased-result {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.prob-diseased-worry {
+    font-size: 18px;
+    padding: 6px;
+}
