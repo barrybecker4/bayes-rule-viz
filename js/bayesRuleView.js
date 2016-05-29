@@ -27,7 +27,7 @@ var disease = (function(module) {
                 '<td class="numerator"> p(<span class="diseased">D</span>) &nbsp; p(<span class="positive">positive</span> | <span class="diseased">D</span>) </td>' +
                 '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>' +
                 '<td class="numerator"><span class="prob-diseased"></span> * <span class="prob-pos-given-diseased"></span></td>' +
-                '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp; <span class="prob-diseased-result"></span><span class="prob-diseased-worry"></span></td>' +
+                '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp; <span class="prob-diseased-result"></span> chance that you are infected. <span class="prob-diseased-worry"></span></td>' +
                 '<td rowspan="2" nowrap="nowrap" width="100%"> &nbsp;</td>' +
                 '</tr>' +
                 '<tr>' +
@@ -71,25 +71,25 @@ var disease = (function(module) {
         function getWorryAttrs(probDiseased) {
             var worryAttrs = {};
 
-            if (probDiseased < 5) {
+            if (probDiseased <= 5) {
                 worryAttrs.howMuch = "Don't Worry!";
-                worryAttrs.color = "#00ee00";
+                worryAttrs.color = "#00dd00";
             }
-            else if (probDiseased < 10) {
+            else if (probDiseased <= 10) {
                 worryAttrs.howMuch = "Perhaps you should worry a little...";
-                worryAttrs.color = "#99cc00";
+                worryAttrs.color = "#77aa00";
             }
-            else if (probDiseased < 20) {
+            else if (probDiseased <= 20) {
                 worryAttrs.howMuch = "You should be concerned, but don't panic.";
-                worryAttrs.color = "#dd9900";
+                worryAttrs.color = "#aa7700";
             }
-            else if (probDiseased < 50) {
+            else if (probDiseased <= 50) {
                 worryAttrs.howMuch = "Yes, you should worry.";
                 worryAttrs.color = "#ee0000";
             }
             else {
                 worryAttrs.howMuch = "Panic!";
-                worryAttrs.color = "#cc0000";
+                worryAttrs.color = "#bb0000";
             }
             return worryAttrs;
         }

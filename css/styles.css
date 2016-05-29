@@ -21,24 +21,27 @@ body {
     color: #cc9900;
 }
 
+#bayes-rule-view {
+    width: 100%;
+    padding: 10px;
+    //border: 1px solid blue;
+}
 #sankey-view {
-    float: right;
+    float: left;
     width: 50%;
     height: 400px;
+    //padding: 2px;
     //border: 1px solid red;
 }
 #venn-diagram-view {
     float: right;
     width: 50%;
     height: 400px;
-    //border: 1px solid blue;
-    display: none;
-}
-#bayes-rule-view {
-    width: 100%;
+    //padding: 2px;
     //border: 1px solid blue;
 }
 
+
 .inputs {
-    width: 610px;
+    width: 660px;
 }

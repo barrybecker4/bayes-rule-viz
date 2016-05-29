@@ -18,7 +18,6 @@ var disease = (function(module) {
         ]
     };
 
-
     var sankeyView, vennDiagramView, bayesRuleView;
 
 
@@ -31,7 +30,7 @@ var disease = (function(module) {
     module.init = function(totalPopulation, initialPctDiseased, initialTestAccuracy) {
 
         initialPctDiseased = initialPctDiseased ? initialPctDiseased : 1;
-        initialTestAccuracy = initialTestAccuracy ? initialTestAccuracy : 95;
+        initialTestAccuracy = initialTestAccuracy ? initialTestAccuracy : 90;
         TOTAL_POPULATION = totalPopulation;
 
         $("#total-population").text(TOTAL_POPULATION.toLocaleString());
@@ -42,7 +41,7 @@ var disease = (function(module) {
 
         bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
         sankeyView = disease.sankeyView("#sankey-view", graph);
-        //vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
+        vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph);
 
         updateViews();
 
@@ -69,8 +68,8 @@ var disease = (function(module) {
         testAccuracySlider.slider({
             value: initialTestAccuracy,
             min: 80,
-            max: 99.5,
-            step: 0.5,
+            max: 99.0,
+            step: 1.0,
             slide: getSliderChangedHandler("#test-accuracy"),
             stop: clearThumbTip
         });
@@ -114,7 +113,7 @@ var disease = (function(module) {
     function renderViews() {
         bayesRuleView.render();
         sankeyView.render();
-        //vennDiagramView.render();
+        vennDiagramView.render();
     }
 
     function clearThumbTip() {
