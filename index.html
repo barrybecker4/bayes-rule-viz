@@ -20,9 +20,11 @@
 
     <body onload="disease.init(1000000)">
         <h1>Disease Testing Visualization</h1>
-        <p>Suppose your doctor tests you for a terrible disease, and the results are <span class="positive">positive</span>!
+        <p>Suppose your doctor tests you for a terrible disease, and the results are
+            <span class="positive">positive</span>!
             How worried should you be?
-            <a href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes' theorem</a>, can be used to answer this question.
+            <a href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes' theorem</a>,
+            can be used to answer this question.
         </p>
 
         <p>Suppose the total population is <span id="total-population"></span> people.
@@ -30,17 +32,17 @@
             and <span class="healthy">H</span> = <span class="healthy">Healthy</span>.</p>
 
         <div class="inputs">
-            <span class="input-line">The incidence of the disease in the population is <span id="probability-diseased"></span>%
-              <span id="probability-diseased-slider" class="slider"></span>
+            <span class="input-line">The incidence of the disease in the population is
+                <span id="probability-diseased"></span>%
+                <span id="probability-diseased-slider" class="slider"></span>
             </span>
             <div class="input-line">The disease testing accuracy is <span id="test-accuracy"></span>%
                 <div id="test-accuracy-slider" class="slider"></div>
             </div>
         </div>
-
         <div id="bayes-rule-view"></div>
+
         <div id="venn-diagram-view"></div>
         <div id="sankey-view"></div>
-
     </body>
 </html>

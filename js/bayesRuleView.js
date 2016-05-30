@@ -27,8 +27,8 @@ var disease = (function(module) {
                 '<td class="numerator"> p(<span class="diseased">D</span>) &nbsp; p(<span class="positive">positive</span> | <span class="diseased">D</span>) </td>' +
                 '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>' +
                 '<td class="numerator"><span class="prob-diseased"></span> * <span class="prob-pos-given-diseased"></span></td>' +
-                '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp; <span class="prob-diseased-result"></span> chance that you are infected. <span class="prob-diseased-worry"></span></td>' +
-                '<td rowspan="2" nowrap="nowrap" width="100%"> &nbsp;</td>' +
+                '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>' +
+                '<td rowspan="2" width="100%"> <span class="prob-diseased-result"></span>&nbsp;</span> chance that you are infected. <span class="prob-diseased-worry"></span></td>' +
                 '</tr>' +
                 '<tr>' +
                 '<td class="upper_line">p(<span class="positive">positive</span>)</td>' +

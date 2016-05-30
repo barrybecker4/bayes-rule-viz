@@ -15,8 +15,8 @@ var disease = (function(module) {
             .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
         
         var sankey = d3.sankey()
-            .nodeWidth(20)
-            .nodePadding(50);
+            .nodeWidth(15)
+            .nodePadding(30);
 
         var defs, linksEl, nodesEl;
         var width, height;
@@ -42,9 +42,10 @@ var disease = (function(module) {
         my.render = function() {
             var chartWidth = $(parentEl).width();
             var chartHeight = $(parentEl).height();
+            console.log("ht="+ chartHeight);
             width = chartWidth - margin.left - margin.right;
             height = chartHeight - margin.top - margin.bottom;
-            var t = d3.transition().duration(500);
+            //var t = d3.transition().duration(500);
 
             // append the svg canvas to the page
             var svg = d3.select(parentEl + " svg")

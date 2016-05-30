@@ -10,9 +10,9 @@ var disease = (function(module) {
 
     var graph = {
         "nodes": [
-            {"node": 0, "id": "diseased", "name": "Actually Diseased"},
-            {"node": 1, "id": "healthy", "name": "Actually Healthy"},
-            {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but they have the Disease!"},
+            {"node": 0, "id": "diseased", "name": "Diseased"},
+            {"node": 1, "id": "healthy", "name": "Healthy"},
+            {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but infected!"},
             {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
             {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
         ]

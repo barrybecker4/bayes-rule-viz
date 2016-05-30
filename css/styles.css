@@ -1,9 +1,7 @@
+
 body {
     font-family: Calibri, SansSerif, sans-serif;
-}
-
-.body-text {
-    font-size: 16px;
+    height: 100%;
 }
 
 .diseased {
@@ -15,10 +13,15 @@ body {
     font-weight: bold;
     color: #009900;
 }
+
 /* if this changes significantly, also update in disease.js. This version should be a little darker */
 .positive {
     font-weight: bold;
     color: #cc9900;
+}
+
+.inputs {
+    width: 660px;
 }
 
 #bayes-rule-view {
@@ -27,19 +30,13 @@ body {
     //border: 1px solid blue;
 }
 #sankey-view {
-    float: right;
-    width: 50%;
-    height: 600px;
-    //border: 1px solid red;
-}
-#venn-diagram-view {
     float: left;
     width: 50%;
-    height: 600px;
-    //border: 1px solid blue;
+    height: 500px;
+}
+#venn-diagram-view {
+    float: right;
+    width: 50%;
+    height: 500px;
 }
 
-
-.inputs {
-    width: 660px;
-}
