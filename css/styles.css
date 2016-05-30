@@ -32,11 +32,11 @@ body {
 #sankey-view {
     float: left;
     width: 50%;
-    height: 500px;
+    height: 70%;
 }
 #venn-diagram-view {
     float: right;
     width: 50%;
-    height: 500px;
+    height: 70%;
 }
 

@@ -11,7 +11,7 @@ var disease = (function(module) {
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
         var colorScale = d3.scale.ordinal()
-            .range(["#ff3300", "#00ee11", "#cc0044", disease.POSITIVE_COLOR, "#00ff00"])
+            .range([disease.DISEASED_COLOR, disease.HEALTHY_COLOR, disease.TEST_NEG_DISEASED, disease.POSITIVE_COLOR, disease.TEST_NEG_HEALTHY])
             .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
         
         var sankey = d3.sankey()
@@ -74,7 +74,7 @@ var disease = (function(module) {
             // add the link titles
             linkEnter.append("title")
                 .text(function (d) {
-                    return d.source.name + " -> " + d.target.name;
+                    return d.source.name + " -> " + d.target.name + " (" + d.value.toLocaleString() + " people)";
                 });
 
             var path = sankey.link();

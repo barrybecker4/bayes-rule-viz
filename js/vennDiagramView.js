@@ -9,10 +9,6 @@ var disease = (function(module) {
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
-        var colorScale = d3.scale.ordinal()
-            .range(["#ff3300", "#00ee11", "#cc0044", disease.POSITIVE_COLOR, "#00ff00"])
-            .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
-
         var my = {};
 
 
@@ -26,13 +22,16 @@ var disease = (function(module) {
 
             svg.append("circle")
                 .attr("class", "population-circle")
-                .attr("opacity", 0.6).attr("fill", "#eeff00");
-            svg.append("circle")
-                .attr("class", "test-positive-circle")
-                .attr("opacity", 0.6).attr("fill", "#ddbb00");
+                .attr("opacity", 0.4).attr("fill", disease.TEST_NEG_HEALTHY);
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("opacity", 0.6).attr("fill", "#dd0000");
+                .attr("opacity", 1.0).attr("fill", disease.TEST_NEG_DISEASED);
+            svg.append("circle")
+                .attr("class", "test-positive-circle")
+                .attr("opacity", 1.0).attr("fill", disease.POSITIVE_COLOR);
+            svg.append("circle")
+                .attr("class", "diseased-circle")
+                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR);
         }
 
 
@@ -54,7 +53,7 @@ var disease = (function(module) {
             var numDiseased = testNegButDiseased + numPositiveAndDiseased;
             var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
 
-            var testPositiveRad = 128;
+            var testPositiveRad = 200;
             var scaleFactor = Math.sqrt(totalPopulation / numPositive);
             var diseasedRad = testPositiveRad * numDiseased / numPositive;
             var popRad = testPositiveRad * scaleFactor;
@@ -68,14 +67,14 @@ var disease = (function(module) {
             });
             //console.log("dist=" + distance);
 
-            svg.select("circle.population-circle")
-                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40).attr("cy", chartHeightD2)
+            svg.selectAll("circle.population-circle")
+                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 30).attr("cy", chartHeightD2)
                 .attr("r", popRad);
-            svg.select("circle.test-positive-circle")
-                .attr("cx", chartWidthD2 + testPositiveRad).attr("cy", chartHeightD2)
+            svg.selectAll("circle.test-positive-circle")
+                .attr("cx", chartWidthD2 + testPositiveRad - 60).attr("cy", chartHeightD2)
                 .attr("r", testPositiveRad);
-            svg.select("circle.diseased-circle")
-                .attr("cx", chartWidthD2 + testPositiveRad).attr("cy", chartHeightD2 - distance)
+            svg.selectAll("circle.diseased-circle")
+                .attr("cx", chartWidthD2 + testPositiveRad - 60).attr("cy", chartHeightD2 - distance)
                 .attr("r", diseasedRad);
         };
 

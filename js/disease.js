@@ -5,6 +5,10 @@
 var disease = (function(module) {
 
     module.POSITIVE_COLOR = "#eebb00";
+    module.HEALTHY_COLOR = "#00ee11";
+    module.DISEASED_COLOR = "#ff3300";
+    module.TEST_NEG_HEALTHY = "#00ff00";
+    module.TEST_NEG_DISEASED = "#cc0055";
     
     var TOTAL_POPULATION;
 
