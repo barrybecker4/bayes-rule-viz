@@ -9,6 +9,9 @@ var disease = (function(module) {
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
+        /** all circles will be relative to the test positive circle */
+        var TEST_POS_CIRCLE_RADIUS = 200;
+
         var my = {};
 
 
@@ -53,13 +56,13 @@ var disease = (function(module) {
             var numDiseased = testNegButDiseased + numPositiveAndDiseased;
             var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
 
-            var testPositiveRad = 200;
+            var testPositiveRad = TEST_POS_CIRCLE_RADIUS;
             var scaleFactor = Math.sqrt(totalPopulation / numPositive);
             var diseasedRad = testPositiveRad * numDiseased / numPositive;
             var popRad = testPositiveRad * scaleFactor;
-            var overlap = Math.PI * diseasedRad * diseasedRad * numPositiveAndDiseased / numDiseased; //numPositiveAndDiseased ;
+            var overlap = Math.PI * diseasedRad * diseasedRad * numPositiveAndDiseased / numDiseased;
 
-            //console.log("numPositiveAndDiseased = " + numPositiveAndDiseased  + " numDiseased = " + numDiseased + " overlap="+ overlap);
+            //console.log("numPositiveAndDiseased = " + numPositiveAndDiseased + " numDiseased = " + numDiseased + " overlap="+ overlap);
             var distance = findCircleSeparation({
                 radiusA: testPositiveRad,
                 radiusB: diseasedRad,
