@@ -58,6 +58,15 @@ var disease = (function(module) {
             var scaleFactor = Math.sqrt(totalPopulation / numPositive);
             var diseasedRad = testPositiveRad * numDiseased / numPositive;
             var popRad = testPositiveRad * scaleFactor;
+            var overlap = Math.PI * diseasedRad * diseasedRad * numPositiveAndDiseased / numDiseased; //numPositiveAndDiseased ;
+
+            //console.log("numPositiveAndDiseased = " + numPositiveAndDiseased  + " numDiseased = " + numDiseased + " overlap="+ overlap);
+            var distance = findCircleSeparation({
+                radiusA: testPositiveRad,
+                radiusB: diseasedRad,
+                overlap: overlap
+            });
+            //console.log("dist=" + distance);
 
             svg.select("circle.population-circle")
                 .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40).attr("cy", chartHeightD2)
@@ -66,7 +75,7 @@ var disease = (function(module) {
                 .attr("cx", chartWidthD2 + testPositiveRad).attr("cy", chartHeightD2)
                 .attr("r", testPositiveRad);
             svg.select("circle.diseased-circle")
-                .attr("cx", chartWidthD2 + testPositiveRad).attr("cy", chartHeightD2 - testPositiveRad)
+                .attr("cx", chartWidthD2 + testPositiveRad).attr("cy", chartHeightD2 - distance)
                 .attr("r", diseasedRad);
         };
 
@@ -89,6 +98,8 @@ var disease = (function(module) {
             var radBsq = radB * radB;
             var maxDistance = radA + radB;
             var maxOverlap = Math.PI * Math.min(radAsq, radBsq);
+            //console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
+
 
             // This function returns the area of intersection when the two circles are x apart.
             var y = function (x) {
@@ -107,7 +118,7 @@ var disease = (function(module) {
                     + angleCAD * radAsq - radAsq * Math.sin(angleCAD));
             };
 
-            return findXForY(circleInfo.support, y, maxDistance, maxOverlap);
+            return findXForY(circleInfo.overlap, y, maxDistance, maxOverlap);
         };
 
         /**
@@ -130,7 +141,7 @@ var disease = (function(module) {
             if (isNaN(currentY)) {
                 throw "y is NaN for " + currentGuess;
             }
-            var EPS = 0.0001;
+            var EPS = 0.1;
             // if an answer is not found after 20 iterations something is wrong
             var MAX_ITERATIONS = 20;
             var ct = 0;

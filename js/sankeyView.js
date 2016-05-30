@@ -42,7 +42,6 @@ var disease = (function(module) {
         my.render = function() {
             var chartWidth = $(parentEl).width();
             var chartHeight = $(parentEl).height();
-            console.log("ht="+ chartHeight);
             width = chartWidth - margin.left - margin.right;
             height = chartHeight - margin.top - margin.bottom;
             //var t = d3.transition().duration(500);
