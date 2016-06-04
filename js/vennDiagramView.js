@@ -117,18 +117,18 @@ var disease = (function(module) {
                 .attr("cy", diseasedCenterY)
                 .attr("r", diseasedRad);
 
-            var interPoints = circleIntersection(
-                centerX, chartHeightD2, testPositiveRad,
-                centerX, diseasedCenterY, diseasedRad);
 
+            // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
             svg.selectAll("path.test-positive-diseased-intersection")
-                .attr("d", function() {
-                    var p = "M" + interPoints[0] + "," + interPoints[2] + "A" + diseasedRad + "," + diseasedRad +
-                        " 0 1,1 " + interPoints[1] + "," + interPoints[3]+ "A" + testPositiveRad + "," + testPositiveRad +
-                        " 0 0,1 " + interPoints[0] + "," + interPoints[2];
-                    console.log(p);
-                    return p;
-                });
+                .attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
+                    centerX, diseasedCenterY, diseasedRad));
+        };
+
+        var pathFunc = function(x1, y1, rad1, x2, y2, rad2) {
+            var interPoints = circleIntersection(x1, y1, rad1,  x2, y2, rad2);
+            return "M" + interPoints[0] + "," + interPoints[2] + "A" + rad2 + "," + rad2 +
+                " 0 1,1 " + interPoints[1] + "," + interPoints[3]+ "A" + rad1 + "," + rad1 +
+                " 0 0,1 " + interPoints[0] + "," + interPoints[2];
         };
 
         /**
