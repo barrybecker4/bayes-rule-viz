@@ -54,7 +54,7 @@ var disease = (function(module) {
             svg.append("circle")
                 .attr("class", "test-positive-circle")
                 .attr("opacity", 0.0)
-                .append("title").text("Tested positive but Healthy");
+                .append("title");
 
             svg.append("path")
                 .attr("class", "test-positive-diseased-intersection")
@@ -111,20 +111,23 @@ var disease = (function(module) {
             svg.selectAll("circle.test-positive-circle")
                 .attr("cx", centerX)
                 .attr("cy", chartHeightD2)
-                .attr("r", testPositiveRad);
+                .attr("r", testPositiveRad)
+                .select("title")
+                .text("Tested positive but Healthy ("
+                    + numPositiveAndHealthy.toLocaleString() + ")");
             svg.selectAll("circle.diseased-circle")
                 .attr("cx", centerX)
                 .attr("cy", diseasedCenterY)
                 .attr("r", diseasedRad)
-                .select("title").text("These people have the disease, but they tested negative, so they will die ("
+                .select("title")
+                .text("Have the disease, but they tested negative, so they will die ("
                      + testNegButDiseased.toLocaleString() + ")");
-
 
             // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
             var path = svg.selectAll("path.test-positive-diseased-intersection");
             path.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
                     centerX, diseasedCenterY, diseasedRad));
-            path.select("title").text("Tested positive and they have the Disease ("
+            path.select("title").text("Tested positive and they have the disease ("
                 + numPositiveAndDiseased.toLocaleString() +")" );
 
         };
