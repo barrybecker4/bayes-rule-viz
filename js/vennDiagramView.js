@@ -36,25 +36,31 @@ var disease = (function(module) {
             svg.append("circle")
                 .attr("class", "population-circle")
                 .attr("opacity", 0.3).attr("fill", disease.TEST_NEG_HEALTHY)
-                .append("title").text("The whole population. Those outside the red circle are healthy.");
+                .append("title").text("The whole population. Those outside the red circle are healthy");
             svg.append("circle")
                 .attr("class", "test-positive-circle")
-                .attr("opacity", 0.6).attr("fill", disease.POSITIVE_COLOR);
+                .attr("opacity", 0.4).attr("fill", disease.POSITIVE_COLOR);
 
             svg.append("circle")
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR)
-                .append("title").text("These are healthy, but tested positive.");
+                .append("title").text("These are healthy, but tested positive");
             svg.append("circle").on("click", function() {alert("hi")})
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.6).attr("fill", disease.TEST_NEG_DISEASED)
                 .style("mask", "url(#test-pos-mask)")
-                .append("title").text("These people have the disease, but they tested negative, so they will die.")
+                .append("title").text("These people have the disease, but they tested negative, so they will die");
 
             svg.append("circle")
                 .attr("class", "test-positive-circle")
                 .attr("opacity", 0.0)
                 .append("title").text("These people tested positive");
+
+            svg.append("path")
+                .attr("class", "test-positive-diseased-intersection")
+                .attr("opacity", 0.4)
+                .attr("fill", "#ffaa00")
+                .append("title").text("These people have the disease and tested positive");
         }
 
 
@@ -83,8 +89,8 @@ var disease = (function(module) {
             var diseaseArea = Math.PI * diseasedRad * diseasedRad;
             var overlap = diseaseArea * numPositiveAndDiseased / numDiseased;
 
-
-            console.log("diseaseArea= " + diseaseArea + " popArea= "+ popArea + " numDiseased= " + numDiseased + " pop= " + totalPopulation
+            console.log("diseaseArea= " + diseaseArea + " popArea= "+ popArea
+                + " numDiseased= " + numDiseased + " pop= " + totalPopulation
                 + " rat1=" + diseaseArea/popArea + " rat2="+ numDiseased/totalPopulation);
 
             //console.log("numPositiveAndDiseased = " + numPositiveAndDiseased + " numDiseased = " + numDiseased + " overlap="+ overlap);
@@ -95,16 +101,34 @@ var disease = (function(module) {
             });
             //console.log("dist=" + distance);
             var centerX = chartWidthD2 + testPositiveRad - 80;
+            var diseasedCenterY = chartHeightD2 - distance;
+
 
             svg.selectAll("circle.population-circle")
-                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40).attr("cy", chartHeightD2)
+                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40)
+                .attr("cy", chartHeightD2)
                 .attr("r", popRad);
             svg.selectAll("circle.test-positive-circle")
-                .attr("cx", centerX).attr("cy", chartHeightD2)
+                .attr("cx", centerX)
+                .attr("cy", chartHeightD2)
                 .attr("r", testPositiveRad);
             svg.selectAll("circle.diseased-circle")
-                .attr("cx", centerX).attr("cy", chartHeightD2 - distance)
+                .attr("cx", centerX)
+                .attr("cy", diseasedCenterY)
                 .attr("r", diseasedRad);
+
+            var interPoints = circleIntersection(
+                centerX, chartHeightD2, testPositiveRad,
+                centerX, diseasedCenterY, diseasedRad);
+
+            svg.selectAll("path.test-positive-diseased-intersection")
+                .attr("d", function() {
+                    var p = "M" + interPoints[0] + "," + interPoints[2] + "A" + diseasedRad + "," + diseasedRad +
+                        " 0 1,1 " + interPoints[1] + "," + interPoints[3]+ "A" + testPositiveRad + "," + testPositiveRad +
+                        " 0 0,1 " + interPoints[0] + "," + interPoints[2];
+                    console.log(p);
+                    return p;
+                });
         };
 
         /**
@@ -198,6 +222,52 @@ var disease = (function(module) {
             }
             return currentGuess;
         };
+
+
+
+        /**
+         * @return the points that define the intersection region of two circles.
+         */
+        function circleIntersection(x0, y0, r0, x1, y1, r1) {
+            var a, dx, dy, distance, h, rx, ry;
+            var x2, y2;
+
+            dx = x1 - x0;
+            dy = y1 - y0;
+            distance = Math.sqrt((dy * dy) + (dx * dx));
+
+            if (distance > (r0 + r1)) {
+                throw "No solution. circles do not intersect";
+            }
+            if (distance < Math.abs(r0 - r1)) {
+                throw "No solution. one circle is contained in the other"
+            }
+
+            // Determine the distance from point 0 to point 2.
+            // point 2 is the point where the line through the circle
+            //intersection points crosses the line between the circle centers.
+            a = ((r0 * r0) - (r1 * r1) + (distance * distance)) / (2.0 * distance);
+
+            // Determine the coordinates of point 2.
+            x2 = x0 + (dx * a / distance);
+            y2 = y0 + (dy * a / distance);
+
+            // Determine the distance from point 2 to either of the
+            // intersection points.
+            h = Math.sqrt((r0 * r0) - (a * a));
+
+            // Determine the offsets of the intersection points from point 2.
+            rx = -dy * (h / distance);
+            ry = dx * (h / distance);
+
+            // Determine the absolute intersection points.
+            var xi = x2 + rx;
+            var xi_prime = x2 - rx;
+            var yi = y2 + ry;
+            var yi_prime = y2 - ry;
+
+            return [xi, xi_prime, yi, yi_prime];
+        }
 
         init();
         return my;
