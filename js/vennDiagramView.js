@@ -35,11 +35,11 @@ var disease = (function(module) {
 
             svg.append("circle")
                 .attr("class", "population-circle")
-                .attr("opacity", 0.4).attr("fill", disease.TEST_NEG_HEALTHY)
+                .attr("opacity", 0.3).attr("fill", disease.TEST_NEG_HEALTHY)
                 .append("title").text("The whole population. Those outside the red circle are healthy.");
             svg.append("circle")
                 .attr("class", "test-positive-circle")
-                .attr("opacity", 0.8).attr("fill", disease.POSITIVE_COLOR);
+                .attr("opacity", 0.6).attr("fill", disease.POSITIVE_COLOR);
 
             svg.append("circle")
                 .attr("class", "diseased-circle")
@@ -47,7 +47,7 @@ var disease = (function(module) {
                 .append("title").text("These are healthy, but tested positive.");
             svg.append("circle").on("click", function() {alert("hi")})
                 .attr("class", "diseased-circle")
-                .attr("opacity", 0.9).attr("fill", disease.TEST_NEG_DISEASED)
+                .attr("opacity", 0.6).attr("fill", disease.TEST_NEG_DISEASED)
                 .style("mask", "url(#test-pos-mask)")
                 .append("title").text("These people have the disease, but they tested negative, so they will die.")
 
@@ -55,8 +55,6 @@ var disease = (function(module) {
                 .attr("class", "test-positive-circle")
                 .attr("opacity", 0.0)
                 .append("title").text("These people tested positive");
-
-
         }
 
 
