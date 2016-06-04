@@ -43,8 +43,8 @@ var disease = (function(module) {
 
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR);
-                //.append("title").text("These are healthy, but tested positive");
+                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR)
+                .append("title");
             svg.append("circle").on("click", function() {alert("hi")})
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.6).attr("fill", disease.TEST_NEG_DISEASED)
@@ -77,7 +77,7 @@ var disease = (function(module) {
 
             var numPositiveAndDiseased = graph.links[1].value;
             var numPositiveAndHealthy =  graph.links[2].value;
-            var testNegButDiseased = graph.links[0].value;
+            var testNegButDiseased = Math.round(graph.links[0].value);
             var numDiseased = testNegButDiseased + numPositiveAndDiseased;
             var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
 
@@ -115,14 +115,17 @@ var disease = (function(module) {
             svg.selectAll("circle.diseased-circle")
                 .attr("cx", centerX)
                 .attr("cy", diseasedCenterY)
-                .attr("r", diseasedRad);
+                .attr("r", diseasedRad)
+                .select("title").text("These are healthy, but tested positive ("
+                     + testNegButDiseased.toLocaleString() + ")");
 
 
             // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
             var path = svg.selectAll("path.test-positive-diseased-intersection");
             path.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
                     centerX, diseasedCenterY, diseasedRad));
-            path.select("title").text("Tested positive and they have the Disease ("+ numPositiveAndHealthy +")" );
+            path.select("title").text("Tested positive and they have the Disease ("
+                + numPositiveAndDiseased.toLocaleString() +")" );
 
         };
 
