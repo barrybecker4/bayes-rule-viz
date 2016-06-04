@@ -18,23 +18,45 @@ var disease = (function(module) {
         /** Add the initial svg structure */
         function init() {
             // append the svg canvas to the page
-            var svg = d3.selectAll(parentEl).append("svg")
-                .append("g")
+            var rootSvg = d3.selectAll(parentEl).append("svg");
+            var svg = rootSvg.append("g")
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
+            var mask = svg.append("defs")
+                .append("mask")
+                .attr("id", "test-pos-mask");
+            mask.append("circle")
+                .attr("class", "population-circle")
+                .style("fill", "#ffffff");
+            mask.append("circle")
+                .attr("class", "test-positive-circle")
+                .style("fill", "#000000");
+
             svg.append("circle")
                 .attr("class", "population-circle")
-                .attr("opacity", 0.4).attr("fill", disease.TEST_NEG_HEALTHY);
-            svg.append("circle")
-                .attr("class", "diseased-circle")
-                .attr("opacity", 1.0).attr("fill", disease.TEST_NEG_DISEASED);
+                .attr("opacity", 0.4).attr("fill", disease.TEST_NEG_HEALTHY)
+                .append("title").text("The whole population. Those outside the red circle are healthy.");
             svg.append("circle")
                 .attr("class", "test-positive-circle")
-                .attr("opacity", 1.0).attr("fill", disease.POSITIVE_COLOR);
+                .attr("opacity", 0.8).attr("fill", disease.POSITIVE_COLOR);
+
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR);
+                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR)
+                .append("title").text("These are healthy, but tested positive.");
+            svg.append("circle").on("click", function() {alert("hi")})
+                .attr("class", "diseased-circle")
+                .attr("opacity", 0.9).attr("fill", disease.TEST_NEG_DISEASED)
+                .style("mask", "url(#test-pos-mask)")
+                .append("title").text("These people have the disease, but they tested negative, so they will die.")
+
+            svg.append("circle")
+                .attr("class", "test-positive-circle")
+                .attr("opacity", 0.0)
+                .append("title").text("These people tested positive");
+
+
         }
 
 
@@ -49,7 +71,6 @@ var disease = (function(module) {
                 .attr("width", chartWidth)
                 .attr("height", chartHeight);
 
-            var bayesRule = $(".bayes-rule-exp");
             var numPositiveAndDiseased = graph.links[1].value;
             var numPositiveAndHealthy =  graph.links[2].value;
             var testNegButDiseased = graph.links[0].value;
@@ -58,9 +79,15 @@ var disease = (function(module) {
 
             var testPositiveRad = TEST_POS_CIRCLE_RADIUS;
             var scaleFactor = Math.sqrt(totalPopulation / numPositive);
-            var diseasedRad = testPositiveRad * numDiseased / numPositive;
+            var diseasedRad = testPositiveRad * Math.sqrt(numDiseased / numPositive);
             var popRad = testPositiveRad * scaleFactor;
-            var overlap = Math.PI * diseasedRad * diseasedRad * numPositiveAndDiseased / numDiseased;
+            var popArea = Math.PI = popRad * popRad;
+            var diseaseArea = Math.PI * diseasedRad * diseasedRad;
+            var overlap = diseaseArea * numPositiveAndDiseased / numDiseased;
+
+
+            console.log("diseaseArea= " + diseaseArea + " popArea= "+ popArea + " numDiseased= " + numDiseased + " pop= " + totalPopulation
+                + " rat1=" + diseaseArea/popArea + " rat2="+ numDiseased/totalPopulation);
 
             //console.log("numPositiveAndDiseased = " + numPositiveAndDiseased + " numDiseased = " + numDiseased + " overlap="+ overlap);
             var distance = findCircleSeparation({
@@ -69,15 +96,16 @@ var disease = (function(module) {
                 overlap: overlap
             });
             //console.log("dist=" + distance);
+            var centerX = chartWidthD2 + testPositiveRad - 80;
 
             svg.selectAll("circle.population-circle")
-                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 30).attr("cy", chartHeightD2)
+                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40).attr("cy", chartHeightD2)
                 .attr("r", popRad);
             svg.selectAll("circle.test-positive-circle")
-                .attr("cx", chartWidthD2 + testPositiveRad - 60).attr("cy", chartHeightD2)
+                .attr("cx", centerX).attr("cy", chartHeightD2)
                 .attr("r", testPositiveRad);
             svg.selectAll("circle.diseased-circle")
-                .attr("cx", chartWidthD2 + testPositiveRad - 60).attr("cy", chartHeightD2 - distance)
+                .attr("cx", centerX).attr("cy", chartHeightD2 - distance)
                 .attr("r", diseasedRad);
         };
 

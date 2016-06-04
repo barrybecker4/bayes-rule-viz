@@ -64,24 +64,32 @@ var disease = (function(module) {
             var worryAttrs = {};
 
             if (probDiseased <= 5) {
-                worryAttrs.howMuch = "Don't Worry!";
+                worryAttrs.howMuch = "Don't worry at all!";
                 worryAttrs.color = "#00dd00";
             }
             else if (probDiseased <= 10) {
+                worryAttrs.howMuch = "Don't worry.";
+                worryAttrs.color = "#22cc00";
+            }
+            else if (probDiseased <= 15) {
                 worryAttrs.howMuch = "Perhaps you should worry a little...";
                 worryAttrs.color = "#77aa00";
             }
             else if (probDiseased <= 20) {
                 worryAttrs.howMuch = "You should be concerned, but don't panic.";
-                worryAttrs.color = "#aa7700";
+                worryAttrs.color = "#997700";
             }
             else if (probDiseased <= 50) {
-                worryAttrs.howMuch = "Yes, you should worry.";
-                worryAttrs.color = "#ee0000";
+                worryAttrs.howMuch = "You should worry.";
+                worryAttrs.color = "#bb6600";
+            }
+            else if (probDiseased <= 80) {
+                worryAttrs.howMuch = "Yes, you should be very worried.";
+                worryAttrs.color = "#cc3300";
             }
             else {
-                worryAttrs.howMuch = "Panic!";
-                worryAttrs.color = "#bb0000";
+                worryAttrs.howMuch = "Panic!!!";
+                worryAttrs.color = "#dd0000";
             }
             return worryAttrs;
         }

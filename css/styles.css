@@ -1,7 +1,6 @@
 
 body {
     font-family: Calibri, SansSerif, sans-serif;
-    height: 100%;
 }
 
 .diseased {
@@ -25,18 +24,18 @@ body {
 }
 
 #bayes-rule-view {
-    width: 100%;
+    width: 99%;
     padding: 10px;
     //border: 1px solid blue;
 }
 #sankey-view {
     float: left;
     width: 50%;
-    height: 70%;
+    height: 600px;
 }
 #venn-diagram-view {
     float: right;
     width: 50%;
-    height: 70%;
+    height: 600px;
 }
 
