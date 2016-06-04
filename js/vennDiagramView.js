@@ -49,7 +49,7 @@ var disease = (function(module) {
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.6).attr("fill", disease.TEST_NEG_DISEASED)
                 .style("mask", "url(#test-pos-mask)")
-                .append("title").text("These people have the disease, but they tested negative, so they will die");
+                .append("title");
 
             svg.append("circle")
                 .attr("class", "test-positive-circle")
@@ -116,7 +116,7 @@ var disease = (function(module) {
                 .attr("cx", centerX)
                 .attr("cy", diseasedCenterY)
                 .attr("r", diseasedRad)
-                .select("title").text("These are healthy, but tested positive ("
+                .select("title").text("These people have the disease, but they tested negative, so they will die ("
                      + testNegButDiseased.toLocaleString() + ")");
 
 
