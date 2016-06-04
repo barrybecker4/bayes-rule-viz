@@ -43,8 +43,8 @@ var disease = (function(module) {
 
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR)
-                .append("title").text("These are healthy, but tested positive");
+                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR);
+                //.append("title").text("These are healthy, but tested positive");
             svg.append("circle").on("click", function() {alert("hi")})
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.6).attr("fill", disease.TEST_NEG_DISEASED)
@@ -54,13 +54,13 @@ var disease = (function(module) {
             svg.append("circle")
                 .attr("class", "test-positive-circle")
                 .attr("opacity", 0.0)
-                .append("title").text("These people tested positive");
+                .append("title").text("Tested positive but Healthy");
 
             svg.append("path")
                 .attr("class", "test-positive-diseased-intersection")
                 .attr("opacity", 0.4)
                 .attr("fill", "#ffaa00")
-                .append("title").text("These people have the disease and tested positive");
+                .append("title");
         }
 
 
@@ -119,9 +119,11 @@ var disease = (function(module) {
 
 
             // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
-            svg.selectAll("path.test-positive-diseased-intersection")
-                .attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
+            var path = svg.selectAll("path.test-positive-diseased-intersection");
+            path.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
                     centerX, diseasedCenterY, diseasedRad));
+            path.select("title").text("Tested positive and they have the Disease ("+ numPositiveAndHealthy +")" );
+
         };
 
         var pathFunc = function(x1, y1, rad1, x2, y2, rad2) {
