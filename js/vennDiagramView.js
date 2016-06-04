@@ -7,32 +7,22 @@ var disease = (function(module) {
      */
     module.vennDiagramView = function(parentEl, graph, totalPopulation) {
 
-        var margin = {top: 10, right: 10, bottom: 10, left: 10};
-
-        /** all circles will be relative to the test positive circle */
-        var TEST_POS_CIRCLE_RADIUS = 200;
+        //var margin = {top: 10, right: 10, bottom: 10, left: 10};
+        var TRANS_DURATION = 400;
 
         var my = {};
-
+        var chart = venn.VennDiagram();
+        var div;
+        var tooltip;
 
         /** Add the initial svg structure */
         function init() {
-            // append the svg canvas to the page
-            var rootSvg = d3.selectAll(parentEl).append("svg");
-            var svg = rootSvg.append("g")
-                .attr("transform",
-                    "translate(" + margin.left + "," + margin.top + ")");
+            div = d3.select(parentEl);
 
-            var mask = svg.append("defs")
-                .append("mask")
-                .attr("id", "test-pos-mask");
-            mask.append("circle")
-                .attr("class", "population-circle")
-                .style("fill", "#ffffff");
-            mask.append("circle")
-                .attr("class", "test-positive-circle")
-                .style("fill", "#000000");
-
+            // add a tooltip to place when mousing over
+            tooltip = d3.select(parentEl).append("div")
+                .attr("class", "venntooltip");
+/*
             svg.append("circle")
                 .attr("class", "population-circle")
                 .attr("opacity", 0.4).attr("fill", disease.TEST_NEG_HEALTHY)
@@ -40,7 +30,6 @@ var disease = (function(module) {
             svg.append("circle")
                 .attr("class", "test-positive-circle")
                 .attr("opacity", 0.8).attr("fill", disease.POSITIVE_COLOR);
-
             svg.append("circle")
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR)
@@ -50,156 +39,82 @@ var disease = (function(module) {
                 .attr("opacity", 0.9).attr("fill", disease.TEST_NEG_DISEASED)
                 .style("mask", "url(#test-pos-mask)")
                 .append("title").text("These people have the disease, but they tested negative, so they will die.")
-
             svg.append("circle")
                 .attr("class", "test-positive-circle")
                 .attr("opacity", 0.0)
                 .append("title").text("These people tested positive");
-
-
+                */
         }
-
 
         /** update the Venn diagram */
         my.render = function() {
             var chartWidth = $(parentEl).width();
             var chartHeight = $(parentEl).height();
-            var chartWidthD2 = chartWidth / 2;
-            var chartHeightD2 = chartHeight / 2;
+            chart.width(chartWidth).height(chartHeight);
 
-            var svg = d3.select(parentEl + " svg")
-                .attr("width", chartWidth)
-                .attr("height", chartHeight);
+            div.datum(createSets()).call(chart);
 
-            var numPositiveAndDiseased = graph.links[1].value;
-            var numPositiveAndHealthy =  graph.links[2].value;
-            var testNegButDiseased = graph.links[0].value;
+            div.selectAll("path")
+                .style("stroke-opacity", 0)
+                .style("stroke", "#fff")
+                .style("stroke-width", 0);
+
+            // add listeners to all the groups to display tooltip on mouseover
+            var circles = div.selectAll("g");
+            circles
+                .on("mouseover", function(d, i) {
+                    // sort all the areas relative to the current item
+                    venn.sortAreas(div, d);
+
+                    // Display a tooltip with the current size
+                    tooltip.transition().duration(TRANS_DURATION).style("opacity", .9);
+                    tooltip.text(d.size.toLocaleString() + " people");
+
+                    // highlight the current path
+                    var selection = d3.select(this).transition("tooltip").duration(TRANS_DURATION);
+                    selection.select("path")
+                        .style("stroke-width", 2)
+                        .style("fill-opacity", d.sets.length == 1 ? .4 : .1)
+                        .style("stroke-opacity", 1);
+                })
+
+                .on("mousemove", function() {
+                    tooltip.style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+
+                .on("mouseout", function(d, i) {
+                    tooltip.transition().duration(TRANS_DURATION).style("opacity", 0);
+                    var selection = d3.select(this).transition("tooltip").duration(TRANS_DURATION);
+                    selection.select("path")
+                        .style("stroke-width", 0)
+                        .style("fill-opacity", d.sets.length == 1 ? .25 : .0)
+                        .style("stroke-opacity", 0);
+                });
+        };
+
+        function createSets() {
+
+            var numPositiveAndDiseased = 100;
+            var numPositiveAndHealthy =  80;
+            var testNegButDiseased = 5;
+            if (graph.links) {
+                numPositiveAndDiseased = graph.links[1].value;
+                numPositiveAndHealthy =  graph.links[2].value;
+                testNegButDiseased = graph.links[0].value;
+            }
             var numDiseased = testNegButDiseased + numPositiveAndDiseased;
             var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
 
-            var testPositiveRad = TEST_POS_CIRCLE_RADIUS;
-            var scaleFactor = Math.sqrt(totalPopulation / numPositive);
-            var diseasedRad = testPositiveRad * Math.sqrt(numDiseased / numPositive);
-            var popRad = testPositiveRad * scaleFactor;
-            var popArea = Math.PI = popRad * popRad;
-            var diseaseArea = Math.PI * diseasedRad * diseasedRad;
-            var overlap = diseaseArea * numPositiveAndDiseased / numDiseased;
-
-
-            console.log("diseaseArea= " + diseaseArea + " popArea= "+ popArea + " numDiseased= " + numDiseased + " pop= " + totalPopulation
-                + " rat1=" + diseaseArea/popArea + " rat2="+ numDiseased/totalPopulation);
-
-            //console.log("numPositiveAndDiseased = " + numPositiveAndDiseased + " numDiseased = " + numDiseased + " overlap="+ overlap);
-            var distance = findCircleSeparation({
-                radiusA: testPositiveRad,
-                radiusB: diseasedRad,
-                overlap: overlap
-            });
-            //console.log("dist=" + distance);
-            var centerX = chartWidthD2 + testPositiveRad - 80;
-
-            svg.selectAll("circle.population-circle")
-                .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40).attr("cy", chartHeightD2)
-                .attr("r", popRad);
-            svg.selectAll("circle.test-positive-circle")
-                .attr("cx", centerX).attr("cy", chartHeightD2)
-                .attr("r", testPositiveRad);
-            svg.selectAll("circle.diseased-circle")
-                .attr("cx", centerX).attr("cy", chartHeightD2 - distance)
-                .attr("r", diseasedRad);
-        };
-
-        /**
-         * Given circle A with radiusA, and circle B with radiusB, and a desired amount of overlap,
-         * find the distance between the center of A and B.
-         *
-         * Circle A is at the origin. Circle B starts radA + radB to the right where intersection = 0.
-         * When they are both at the origin, the overlap is min(areaA, areaB)
-         * Move them closer until the amount of overlap is equal to the support.
-         *
-         * @param circleInfo radiusA, radiusB, overlap
-         * @return the center distance between circles A and B.
-         */
-        var findCircleSeparation = function(circleInfo) {
-
-            var radA = circleInfo.radiusA;
-            var radB = circleInfo.radiusB;
-            var radAsq = radA * radA;
-            var radBsq = radB * radB;
-            var maxDistance = radA + radB;
-            var maxOverlap = Math.PI * Math.min(radAsq, radBsq);
-            //console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
-
-
-            // This function returns the area of intersection when the two circles are x apart.
-            var y = function (x) {
-                if (x == 0) {
-                    return maxOverlap;
-                }
-                var cosCBD = (radBsq + x * x - radAsq) / (2.0 * radB * x);
-                var cosCAD = (radAsq + x * x - radBsq) / (2.0 * radA * x);
-                if (Math.abs(cosCBD) > 1 || Math.abs(cosCAD) > 1) {
-                    // then the two circles do not intersect at all
-                    return maxOverlap;
-                }
-                var angleCBD = 2.0 * Math.acos(cosCBD);
-                var angleCAD = 2.0 * Math.acos(cosCAD);
-                return 0.5 * (angleCBD * radBsq - radBsq * Math.sin(angleCBD)
-                    + angleCAD * radAsq - radAsq * Math.sin(angleCAD));
-            };
-
-            return findXForY(circleInfo.overlap, y, maxDistance, maxOverlap);
-        };
-
-        /**
-         * @param overlap the overlapping area value we want to find x for.
-         * @param y the function of x that will yield the support value.
-         * @param maxDistance the maximum distance the two circles can be appart before they no longer overlap.
-         * @param maxOverlap the maximum amount of overlap possible. The min of the two circle areas.
-         * @return the x value for the given y(x)
-         */
-        var findXForY = function(overlap, y, maxDistance, maxOverlap) {
-
-            // if they totally overlay, then we know the distance is 0;
-            if (overlap == maxOverlap) {
-                return 0;
-            }
-            var lower = 0;
-            var upper = maxDistance;
-            var currentGuess = maxDistance / 2.0;
-            var currentY = y(currentGuess);
-            if (isNaN(currentY)) {
-                throw "y is NaN for " + currentGuess;
-            }
-            var EPS = 0.1;
-            // if an answer is not found after 20 iterations something is wrong
-            var MAX_ITERATIONS = 20;
-            var ct = 0;
-
-            while (Math.abs(overlap - currentY) > EPS && ct++ < MAX_ITERATIONS) {
-                if (currentY > overlap) {
-                    // then move circles further apart
-                    currentGuess = (upper + currentGuess) / 2;
-                }
-                else {
-                    // then move circles closer together
-                    currentGuess = (lower + currentGuess) / 2;
-                }
-                currentY = y(currentGuess);
-                if (currentY > overlap) {
-                    lower = currentGuess;
-                }
-                else {
-                    upper = currentGuess;
-                }
-            }
-
-            if (ct >= MAX_ITERATIONS) {
-                throw "It was not possible to find the separation for overlap = " + overlap + " when maxOverlap is "
-                + maxOverlap + " and maxDistance is " + maxDistance + ". Current range = [" + lower + ", " + upper + "]";
-            }
-            return currentGuess;
-        };
+            return [ {sets: ['Population'], size: totalPopulation},
+                {sets: ['Test positive'], size: numPositive},
+                {sets: ['Diseased'], size: numDiseased},
+                {sets: ['Population','Test positive'], size: numPositive},
+                {sets: ['Population','Diseased'], size: numDiseased},
+                {sets: ['Test positive', 'Diseased'], size: numPositiveAndDiseased}
+                // {sets: ['Population', 'Test positive', 'Diseased'], "size": numDiseased}
+            ];
+        }
 
         init();
         return my;
