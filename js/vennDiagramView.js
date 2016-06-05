@@ -41,15 +41,17 @@ var disease = (function(module) {
                 .attr("class", "test-positive-circle")
                 .attr("opacity", 0.4).attr("fill", disease.POSITIVE_COLOR);
 
+
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("opacity", 0.2).attr("fill", disease.DISEASED_COLOR)
+                .attr("opacity", 0.1).attr("fill", disease.DISEASED_COLOR)
                 .append("title");
-            svg.append("circle").on("click", function() {alert("hi")})
+            /*
+            svg.append("circle")
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.6).attr("fill", disease.TEST_NEG_DISEASED)
                 .style("mask", "url(#test-pos-mask)")
-                .append("title");
+                .append("title");*/
 
             svg.append("circle")
                 .attr("class", "test-positive-circle")
@@ -58,8 +60,14 @@ var disease = (function(module) {
 
             svg.append("path")
                 .attr("class", "test-positive-diseased-intersection")
-                .attr("opacity", 0.4)
-                .attr("fill", "#ffaa00")
+                .attr("opacity", 0.3)
+                .attr("fill", "#ddaa00")
+                .append("title");
+
+            svg.append("path")
+                .attr("class", "test-negative-diseased-intersection")
+                .attr("opacity", 0.6)
+                .attr("fill", disease.TEST_NEG_DISEASED)
                 .append("title");
         }
 
@@ -118,25 +126,35 @@ var disease = (function(module) {
             svg.selectAll("circle.diseased-circle")
                 .attr("cx", centerX)
                 .attr("cy", diseasedCenterY)
-                .attr("r", diseasedRad)
-                .select("title")
-                .text("Have the disease, but they tested negative, so they will die ("
-                     + testNegButDiseased.toLocaleString() + ")");
+                .attr("r", diseasedRad);
 
+            // Draw paths for 2 halves of disease circle - the part in the intersection, and outsied of it.
             // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
-            var path = svg.selectAll("path.test-positive-diseased-intersection");
-            path.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
-                    centerX, diseasedCenterY, diseasedRad));
-            path.select("title").text("Tested positive and they have the disease ("
+            var pdPath = svg.selectAll("path.test-positive-diseased-intersection");
+            pdPath.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
+                    centerX, diseasedCenterY, diseasedRad, 1, 1));
+            pdPath.select("title").text("Tested positive and they have the disease ("
                 + numPositiveAndDiseased.toLocaleString() +")" );
+
+            var ndPath = svg.selectAll("path.test-negative-diseased-intersection");
+            ndPath.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
+                centerX, diseasedCenterY, diseasedRad, 0, 0));
+            ndPath.select("title").text("Have the disease, but they tested negative, so they will die ("
+                + testNegButDiseased.toLocaleString() + ")");
 
         };
 
-        var pathFunc = function(x1, y1, rad1, x2, y2, rad2) {
+        var pathFunc = function(x1, y1, rad1, x2, y2, rad2, largeArcFlag2, sweepFlag2) {
             var interPoints = circleIntersection(x1, y1, rad1,  x2, y2, rad2);
-            return "M" + interPoints[0] + "," + interPoints[2] + "A" + rad2 + "," + rad2 +
-                " 0 1,1 " + interPoints[1] + "," + interPoints[3]+ "A" + rad1 + "," + rad1 +
-                " 0 0,1 " + interPoints[0] + "," + interPoints[2];
+            var rotation = 0;
+            var largeArcFlag1 = 0;
+            var sweepFlag1 = 1;
+            return "M" +
+                interPoints[0] + "," + interPoints[2] + "A" + rad2 + "," + rad2 + " " + rotation + " " +
+                largeArcFlag2 + " " + sweepFlag2 + " " +
+                interPoints[1] + "," + interPoints[3]+ "A" + rad1 + "," + rad1 +  " " + rotation + " " +
+                largeArcFlag1 + " " + sweepFlag1 + " " +
+                interPoints[0] + "," + interPoints[2];
         };
 
         /**
