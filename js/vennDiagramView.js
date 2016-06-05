@@ -11,6 +11,7 @@ var disease = (function(module) {
 
         /** all circles will be relative to the test positive circle */
         var TEST_POS_CIRCLE_RADIUS = 200;
+        var DURATION = 300;
 
         var my = {};
 
@@ -23,39 +24,34 @@ var disease = (function(module) {
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
-            var mask = svg.append("defs")
-                .append("mask")
-                .attr("id", "test-pos-mask");
-            mask.append("circle")
-                .attr("class", "population-circle")
-                .style("fill", "#ffffff");
-            mask.append("circle")
-                .attr("class", "test-positive-circle")
-                .style("fill", "#000000");
 
             svg.append("circle")
                 .attr("class", "population-circle")
-                .attr("opacity", 0.3).attr("fill", disease.TEST_NEG_HEALTHY)
+                .attr("fill-opacity", 0.3)
+                .attr("fill", disease.TEST_NEG_HEALTHY)
                 .append("title").text("The whole population. Those outside the red circle are healthy");
             svg.append("circle")
                 .attr("class", "test-positive-circle")
-                .attr("opacity", 0.4).attr("fill", disease.POSITIVE_COLOR);
-
+                .attr("fill-opacity", 0.3)
+                .attr("fill", disease.POSITIVE_COLOR)
+                .on("mousemove", function(d) {
+                    d3.select(this).transition("tooltip").duration(DURATION)
+                        .style("stroke", "black")
+                        .style("fill-opacity", 0.5)
+                        .style("stroke-width", 1)
+                        .style("stroke-opacity", 0.9);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).transition("tooltip").duration(DURATION)
+                        .style("fill-opacity", 0.3)
+                        .style("stroke-width", 0)
+                        .style("stroke-opacity", 0.0);
+                })
+                .append("title");
 
             svg.append("circle")
                 .attr("class", "diseased-circle")
                 .attr("opacity", 0.1).attr("fill", disease.DISEASED_COLOR)
-                .append("title");
-            /*
-            svg.append("circle")
-                .attr("class", "diseased-circle")
-                .attr("opacity", 0.6).attr("fill", disease.TEST_NEG_DISEASED)
-                .style("mask", "url(#test-pos-mask)")
-                .append("title");*/
-
-            svg.append("circle")
-                .attr("class", "test-positive-circle")
-                .attr("opacity", 0.0)
                 .append("title");
 
             svg.append("path")
@@ -123,6 +119,7 @@ var disease = (function(module) {
                 .select("title")
                 .text("Tested positive but Healthy ("
                     + numPositiveAndHealthy.toLocaleString() + ")");
+
             svg.selectAll("circle.diseased-circle")
                 .attr("cx", centerX)
                 .attr("cy", diseasedCenterY)
@@ -141,7 +138,6 @@ var disease = (function(module) {
                 centerX, diseasedCenterY, diseasedRad, 0, 0));
             ndPath.select("title").text("Have the disease, but they tested negative, so they will die ("
                 + testNegButDiseased.toLocaleString() + ")");
-
         };
 
         var pathFunc = function(x1, y1, rad1, x2, y2, rad2, largeArcFlag2, sweepFlag2) {
@@ -249,8 +245,6 @@ var disease = (function(module) {
             return currentGuess;
         };
 
-
-
         /**
          * @return the points that define the intersection region of two circles.
          */
@@ -271,7 +265,7 @@ var disease = (function(module) {
 
             // Determine the distance from point 0 to point 2.
             // point 2 is the point where the line through the circle
-            //intersection points crosses the line between the circle centers.
+            // intersection points crosses the line between the circle centers.
             a = ((r0 * r0) - (r1 * r1) + (distance * distance)) / (2.0 * distance);
 
             // Determine the coordinates of point 2.
