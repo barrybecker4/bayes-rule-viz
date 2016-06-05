@@ -51,6 +51,10 @@ var disease = (function(module) {
         $(window).resize(renderViews);
     };
 
+    module.format = function(value, decimals) {
+        return value.toLocaleString(undefined, { maximumFractionDigits: decimals });
+    };
+    
     /**
      * Show two sliders that allow changing the incidence and accuracy.
      */

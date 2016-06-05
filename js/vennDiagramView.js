@@ -10,7 +10,7 @@ var disease = (function(module) {
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
 
         /** all circles will be relative to the test positive circle */
-        var TEST_POS_CIRCLE_RADIUS = 200;
+        var TEST_POS_CIRCLE_RADIUS = 250;
         var DURATION = 300;
 
         var my = {};
@@ -29,7 +29,8 @@ var disease = (function(module) {
                 .attr("class", "population-circle")
                 .attr("fill-opacity", 0.3)
                 .attr("fill", disease.TEST_NEG_HEALTHY)
-                .append("title").text("The whole population. Those outside the red circle are healthy");
+                .append("title").text("The whole population of " + totalPopulation.toLocaleString() +
+                    " people. \nThose outside the red circle are healthy");
             svg.append("circle")
                 .attr("class", "test-positive-circle")
                 .attr("fill-opacity", 0.3)
@@ -63,11 +64,20 @@ var disease = (function(module) {
                         .style("stroke", "black")
                         .style("fill-opacity", 1.0)
                         .style("stroke-width", 1)
-                        .style("stroke-opacity", 0.9);
+                        .style("stroke-opacity", 1.0);
+                    svg.select("circle.test-positive-circle").transition("tooltip").duration(DURATION)
+                        .attr("fill-opacity", 0.2)
+                        .style("stroke", "black")
+                        .style("stroke-width", 1)
+                        .style("stroke-opacity", 0.3);
                 })
                 .on("mouseout", function(d) {
                     d3.select(this).transition("tooltip").duration(DURATION)
                         .style("fill-opacity", 0.3)
+                        .style("stroke-width", 0)
+                        .style("stroke-opacity", 0.0);
+                    svg.select("circle.test-positive-circle").transition("tooltip").duration(DURATION)
+                        .attr("fill-opacity", 0.2)
                         .style("stroke-width", 0)
                         .style("stroke-opacity", 0.0);
                 })
@@ -82,11 +92,18 @@ var disease = (function(module) {
                         .style("stroke", "black")
                         .style("fill-opacity", 1.0)
                         .style("stroke-width", 1)
-                        .style("stroke-opacity", 0.9);
+                        .style("stroke-opacity", 1.0);
+                    svg.select("circle.diseased-circle").transition("tooltip").duration(DURATION)
+                        .style("stroke", "black")
+                        .style("stroke-width", 1)
+                        .style("stroke-opacity", 0.3);
                 })
                 .on("mouseout", function(d) {
                     d3.select(this).transition("tooltip").duration(DURATION)
                         .style("fill-opacity", 0.6)
+                        .style("stroke-width", 0)
+                        .style("stroke-opacity", 0.0);
+                    svg.select("circle.diseased-circle").transition("tooltip").duration(DURATION)
                         .style("stroke-width", 0)
                         .style("stroke-opacity", 0.0);
                 })
@@ -131,7 +148,7 @@ var disease = (function(module) {
                 overlap: overlap
             });
 
-            var centerX = chartWidthD2 + testPositiveRad - 120;
+            var centerX = chartWidthD2 + testPositiveRad - 180;
             var diseasedCenterY = chartHeightD2 - distance;
 
             svg.selectAll("circle.population-circle")
@@ -143,8 +160,8 @@ var disease = (function(module) {
                 .attr("cy", chartHeightD2)
                 .attr("r", testPositiveRad)
                 .select("title")
-                .text("Tested positive but Healthy ("
-                    + numPositiveAndHealthy.toLocaleString() + ")");
+                .text(numPositive.toLocaleString() + " Tested positive.\n" + numPositiveAndHealthy.toLocaleString() +
+                    " of these are actually healthy.");
 
             svg.selectAll("circle.diseased-circle")
                 .attr("cx", centerX)
@@ -154,16 +171,19 @@ var disease = (function(module) {
             // Draw paths for 2 halves of disease circle - the part in the intersection, and outsied of it.
             // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
             var pdPath = svg.selectAll("path.test-positive-diseased-intersection");
+            var pctDiseasedGivenPositive = disease.format(100 * numPositiveAndDiseased / numPositive, 2);
             pdPath.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
                     centerX, diseasedCenterY, diseasedRad, 1, 1));
-            pdPath.select("title").text("Tested positive and they have the disease ("
-                + numPositiveAndDiseased.toLocaleString() +")" );
+            pdPath.select("title").text(numPositiveAndDiseased.toLocaleString() +
+                " (" + pctDiseasedGivenPositive + "%) " + " of the " +
+                numPositive.toLocaleString() +
+                " that tested positive\nactually have the disease.");
 
             var ndPath = svg.selectAll("path.test-negative-diseased-intersection");
             ndPath.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
                 centerX, diseasedCenterY, diseasedRad, 0, 0));
-            ndPath.select("title").text("Have the disease, but they tested negative, so they will die ("
-                + testNegButDiseased.toLocaleString() + ")");
+            ndPath.select("title").text(testNegButDiseased.toLocaleString() + " out of "
+                + numDiseased.toLocaleString() + "\nwith the disease test negative.");
         };
 
         var pathFunc = function(x1, y1, rad1, x2, y2, rad2, largeArcFlag2, sweepFlag2) {

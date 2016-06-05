@@ -49,19 +49,16 @@ var disease = (function(module) {
             var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
             var probPositiveGivenDiseased = numPositiveAndDiseased / numDiseased;
             bayesRule.find(".prob-diseased").text(numDiseased.toLocaleString());
-            bayesRule.find(".prob-pos-given-diseased").text(format(probPositiveGivenDiseased, 4));
+            bayesRule.find(".prob-pos-given-diseased").text(disease.format(probPositiveGivenDiseased, 4));
             bayesRule.find(".prob-positive").text(numPositive.toLocaleString());
 
             var probDiseasedGivenPositive = (100 * numDiseased * probPositiveGivenDiseased) / numPositive;
 
             var worryAttrs = getWorryAttrs(probDiseasedGivenPositive);
-            bayesRule.find(".prob-diseased-result").text(format(probDiseasedGivenPositive, 2) + "%  ");
+            bayesRule.find(".prob-diseased-result").text(disease.format(probDiseasedGivenPositive, 2) + "%  ");
             bayesRule.find(".prob-diseased-worry").text(worryAttrs.howMuch).css("color", worryAttrs.color);
         };
 
-        function format(value, decimals) {
-            return value.toLocaleString(undefined, { maximumFractionDigits: decimals });
-        }
 
         /** Determine how much you should worry given your probability of having the disease */
         function getWorryAttrs(probDiseased) {
