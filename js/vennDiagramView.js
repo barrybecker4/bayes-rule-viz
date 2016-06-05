@@ -51,19 +51,45 @@ var disease = (function(module) {
 
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("opacity", 0.1).attr("fill", disease.DISEASED_COLOR)
+                .attr("fill-opacity", 0.1).attr("fill", disease.DISEASED_COLOR)
                 .append("title");
 
             svg.append("path")
                 .attr("class", "test-positive-diseased-intersection")
-                .attr("opacity", 0.3)
+                .attr("fill-opacity", 0.3)
                 .attr("fill", "#ddaa00")
+                .on("mousemove", function(d) {
+                    d3.select(this).transition("tooltip").duration(DURATION)
+                        .style("stroke", "black")
+                        .style("fill-opacity", 1.0)
+                        .style("stroke-width", 1)
+                        .style("stroke-opacity", 0.9);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).transition("tooltip").duration(DURATION)
+                        .style("fill-opacity", 0.3)
+                        .style("stroke-width", 0)
+                        .style("stroke-opacity", 0.0);
+                })
                 .append("title");
 
             svg.append("path")
                 .attr("class", "test-negative-diseased-intersection")
-                .attr("opacity", 0.6)
+                .attr("fill-opacity", 0.6)
                 .attr("fill", disease.TEST_NEG_DISEASED)
+                .on("mousemove", function(d) {
+                    d3.select(this).transition("tooltip").duration(DURATION)
+                        .style("stroke", "black")
+                        .style("fill-opacity", 1.0)
+                        .style("stroke-width", 1)
+                        .style("stroke-opacity", 0.9);
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).transition("tooltip").duration(DURATION)
+                        .style("fill-opacity", 0.6)
+                        .style("stroke-width", 0)
+                        .style("stroke-opacity", 0.0);
+                })
                 .append("title");
         }
 
@@ -104,9 +130,8 @@ var disease = (function(module) {
                 overlap: overlap
             });
             //console.log("dist=" + distance);
-            var centerX = chartWidthD2 + testPositiveRad - 80;
+            var centerX = chartWidthD2 + testPositiveRad - 120;
             var diseasedCenterY = chartHeightD2 - distance;
-
 
             svg.selectAll("circle.population-circle")
                 .attr("cx", Math.max(chartWidthD2 - popRad, 0) + popRad + 40)
