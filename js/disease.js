@@ -58,21 +58,22 @@ var disease = (function(module) {
         var probDiseasedSlider = $("#probability-diseased-slider");
         var testAccuracySlider = $("#test-accuracy-slider");
 
+        // Using integer values to avoid round of problems at the max valu
         probDiseasedSlider.slider({
-            value: initialPctDiseased,
-            min: 0.01,
-            max: 20.0,
-            step: 0.01,
+            value: initialPctDiseased * 100,
+            min: 1,
+            max: 2000.0,
+            step: 1,
             height: "10px",
             slide: getSliderChangedHandler("#probability-diseased"),
             stop: clearThumbTip
         });
 
         testAccuracySlider.slider({
-            value: initialTestAccuracy,
-            min: 60.0,
-            max: 100,
-            step: 0.1,
+            value: initialTestAccuracy * 100,
+            min: 8000,
+            max: 9990,  // for some reason only goes to 99.8
+            step: 1,
             slide: getSliderChangedHandler("#test-accuracy"),
             stop: clearThumbTip
         });
@@ -81,10 +82,11 @@ var disease = (function(module) {
     function getSliderChangedHandler(sliderEl) {
         return function (event, ui) {
             // update value in text
-            $(sliderEl).text(ui.value);
+            var value = ui.value / 100;
+            $(sliderEl).text(value);
 
             // current value (when sliding) or initial value (at start)
-            var tooltip = '<div class="tooltip"><div class="tooltip-inner">' + ui.value
+            var tooltip = '<div class="tooltip"><div class="tooltip-inner">' + value
                 + '</div><div class="tooltip-arrow"></div></div>';
             $(sliderEl + "-slider").find('.ui-slider-handle').html(tooltip);
             updateViews();
@@ -119,7 +121,7 @@ var disease = (function(module) {
         vennDiagramView.render();
     }
 
-    function clearThumbTip() {
+    function clearThumbTip(event, ui) {
         $("#probability-diseased-slider").find('.ui-slider-handle').empty();
         $("#test-accuracy-slider").find('.ui-slider-handle').empty();
     }

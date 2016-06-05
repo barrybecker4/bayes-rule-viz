@@ -117,19 +117,20 @@ var disease = (function(module) {
             var popRad = testPositiveRad * scaleFactor;
             var popArea = Math.PI = popRad * popRad;
             var diseaseArea = Math.PI * diseasedRad * diseasedRad;
-            var overlap = diseaseArea * numPositiveAndDiseased / numDiseased;
-
+            var overlap = (numPositiveAndDiseased / numDiseased) * diseaseArea;
+            /*console.log("diseaseArea = "+ diseaseArea + "overlap="+ overlap
+                + " numPosAndD="+ numPositiveAndDiseased + " numDis="+ numDiseased);
             console.log("diseaseArea= " + diseaseArea + " popArea= "+ popArea
                 + " numDiseased= " + numDiseased + " pop= " + totalPopulation
                 + " rat1=" + diseaseArea/popArea + " rat2="+ numDiseased/totalPopulation);
-
-            //console.log("numPositiveAndDiseased = " + numPositiveAndDiseased + " numDiseased = " + numDiseased + " overlap="+ overlap);
+            console.log("numPositiveAndDiseased = " + numPositiveAndDiseased + " numDiseased = "
+             + numDiseased + " overlap="+ overlap); */
             var distance = findCircleSeparation({
                 radiusA: testPositiveRad,
                 radiusB: diseasedRad,
                 overlap: overlap
             });
-            //console.log("dist=" + distance);
+
             var centerX = chartWidthD2 + testPositiveRad - 120;
             var diseasedCenterY = chartHeightD2 - distance;
 
@@ -184,7 +185,7 @@ var disease = (function(module) {
          *
          * Circle A is at the origin. Circle B starts radA + radB to the right where intersection = 0.
          * When they are both at the origin, the overlap is min(areaA, areaB)
-         * Move them closer until the amount of overlap is equal to the support.
+         * Move them closer until the amount of overlap is equal to the overlap.
          *
          * @param circleInfo radiusA, radiusB, overlap
          * @return the center distance between circles A and B.
@@ -197,7 +198,8 @@ var disease = (function(module) {
             var radBsq = radB * radB;
             var maxDistance = radA + radB;
             var maxOverlap = Math.PI * Math.min(radAsq, radBsq);
-            //console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
+            //console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance
+            // + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
 
 
             // This function returns the area of intersection when the two circles are x apart.
@@ -240,9 +242,9 @@ var disease = (function(module) {
             if (isNaN(currentY)) {
                 throw "y is NaN for " + currentGuess;
             }
-            var EPS = 0.1;
+            var EPS = 0.05;
             // if an answer is not found after 20 iterations something is wrong
-            var MAX_ITERATIONS = 20;
+            var MAX_ITERATIONS = 30;
             var ct = 0;
 
             while (Math.abs(overlap - currentY) > EPS && ct++ < MAX_ITERATIONS) {
@@ -285,7 +287,8 @@ var disease = (function(module) {
                 throw "No solution. circles do not intersect";
             }
             if (distance < Math.abs(r0 - r1)) {
-                throw "No solution. one circle is contained in the other"
+                throw "No solution. one circle is contained in the other. Dist = " +
+                    distance + " is less than " + r0 + " - " + r1 + " = " + Math.abs(r0 - r1);
             }
 
             // Determine the distance from point 0 to point 2.
