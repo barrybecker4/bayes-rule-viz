@@ -44,7 +44,6 @@ var disease = (function(module) {
             var chartHeight = $(parentEl).height();
             width = chartWidth - margin.left - margin.right;
             height = chartHeight - margin.top - margin.bottom;
-            //var t = d3.transition().duration(500);
 
             // append the svg canvas to the page
             var svg = d3.select(parentEl + " svg")
@@ -64,18 +63,12 @@ var disease = (function(module) {
         };
 
         function addLinks() {
-            links = linksEl.selectAll(".link")
-                .data(graph.links, getLinkID);
+            links = linksEl.selectAll(".link").data(graph.links, getLinkID);
 
             var linkEnter = links.enter()
                 .append("path")
-                .attr("class", "link");
-
-            // add the link titles
-            linkEnter.append("title")
-                .text(function (d) {
-                    return d.source.name + " -> " + d.target.name + " (" + d.value.toLocaleString() + " people)";
-                });
+                .attr("class", "link")
+                .append("title");
 
             var path = sankey.link();
             links
@@ -88,6 +81,13 @@ var disease = (function(module) {
                 })
                 .sort(function (a, b) {
                     return b.dy - a.dy;
+                });
+
+            // add the link titles
+            links.selectAll("path title")
+                .text(function (d) {
+                    var data = d3.select(this.parentNode).datum();
+                    return d.source.name + " -> " + d.target.name + " (" + data.value.toLocaleString() + " people)";
                 });
         }
 
@@ -128,7 +128,8 @@ var disease = (function(module) {
                 .style("stroke", function (d) {
                     return d3.rgb(d.color).darker(1);
                 })
-                .append("title")
+                .append("title");
+            nodes.select("rect title")
                 .text(function (d) {
                     return d.name + "\n" + d.value.toLocaleString();
                 });

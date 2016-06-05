@@ -60,9 +60,9 @@ var disease = (function(module) {
 
         probDiseasedSlider.slider({
             value: initialPctDiseased,
-            min: 0.1,
-            max: 10.0,
-            step: 0.1,
+            min: 0.01,
+            max: 20.0,
+            step: 0.01,
             height: "10px",
             slide: getSliderChangedHandler("#probability-diseased"),
             stop: clearThumbTip
@@ -70,9 +70,9 @@ var disease = (function(module) {
 
         testAccuracySlider.slider({
             value: initialTestAccuracy,
-            min: 80,
-            max: 99.0,
-            step: 1.0,
+            min: 60.0,
+            max: 100,
+            step: 0.1,
             slide: getSliderChangedHandler("#test-accuracy"),
             stop: clearThumbTip
         });
