@@ -12,8 +12,8 @@ var disease = (function(module) {
         /** all circles will be relative to the test positive circle */
         var TEST_POS_CIRCLE_RADIUS = 250;
         var DURATION = 300;
-        var POP_LABEL_X = 10;
-        var POP_LABEL_Y = 50;
+        var POP_LABEL_X = 100;
+        var POP_LABEL_Y = 200;
 
         var my = {};
 
@@ -51,8 +51,6 @@ var disease = (function(module) {
                 .attr("x", POP_LABEL_X)
                 .attr("y", POP_LABEL_Y)
                 .text("Whole Population");
-            svg.append("line")
-                .attr("class", "venn-line population");
 
             svg.append("circle")
                 .attr("class", "test-positive-circle")
@@ -191,9 +189,10 @@ var disease = (function(module) {
                 .attr("cx", popCircleCenterX)
                 .attr("cy", chartHeightD2)
                 .attr("r", popRad);
-            svg.selectAll("line.venn-line.population")
-                .attr("x1", POP_LABEL_X + 30).attr("y1", POP_LABEL_Y + 5)
-                .attr("x2", popCircleCenterX - popRad + 20).attr("y2", chartHeightD2 - 80);
+
+            var rot = 180/Math.PI * Math.asin(popRad / popCircleCenterX);
+            svg.selectAll("text.venn-label.population")
+                .attr("transform", "rotate(" + -rot + " " + POP_LABEL_X + " " + POP_LABEL_Y + ")");
             svg.selectAll("circle.test-positive-circle")
                 .attr("cx", centerX)
                 .attr("cy", chartHeightD2)
