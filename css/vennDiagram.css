@@ -20,6 +20,9 @@
 .venn-label.positive {
     fill: #999900;
 }
+.venn-label.diseased {
+    fill: #aa0000;
+}
 
 .venn-line {
     stroke: #333333;
