@@ -9,6 +9,18 @@
     padding: 6px;
 }
 
+.venn-label {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.venn-label.population {
+    fill: #339933;
+}
+.venn-label.positive {
+    fill: #999900;
+}
+
 .venn-line {
     stroke: #333333;
     stroke-width: 1px;

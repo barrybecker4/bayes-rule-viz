@@ -54,7 +54,7 @@ var disease = (function(module) {
 
             svg.append("circle")
                 .attr("class", "test-positive-circle")
-                .attr("fill-opacity", 0.05)
+                .attr("fill-opacity", 0.1)
                 .attr("fill", disease.POSITIVE_COLOR);
 
             svg.append("circle")
@@ -64,8 +64,8 @@ var disease = (function(module) {
 
             svg.append("path")
                 .attr("class", "test-positive-diseased-intersection")
-                .attr("fill-opacity", 0.2)
-                .attr("fill", "#ddaa00")
+                .attr("fill-opacity", 0.5)
+                .attr("fill", "#ffaa00")
                 .on("mouseover", function(d) {
                     d3.select(this).transition("tooltip").duration(DURATION)
                         .style("stroke", "black")
@@ -73,7 +73,7 @@ var disease = (function(module) {
                         .style("stroke-width", 1)
                         .style("stroke-opacity", 1.0);
                     svg.select("circle.test-positive-circle").transition("tooltip").duration(DURATION)
-                        .attr("fill-opacity", 0.2)
+                        .attr("fill-opacity", 0.5)
                         .style("stroke", "black")
                         .style("stroke-width", 1)
                         .style("stroke-opacity", 0.3);
@@ -118,7 +118,7 @@ var disease = (function(module) {
 
             svg.append("path")
                 .attr("class", "test-positive-healthy-intersection")
-                .attr("fill-opacity", 0.3)
+                .attr("fill-opacity", 0.2)
                 .attr("fill", disease.POSITIVE_COLOR)
                 .on("mouseover", function(d) {
                     d3.select(this).transition("tooltip").duration(DURATION)
@@ -133,7 +133,7 @@ var disease = (function(module) {
                 })
                 .on("mouseout", function(d) {
                     d3.select(this).transition("tooltip").duration(DURATION)
-                        .style("fill-opacity", 0.3)
+                        .style("fill-opacity", 0.2)
                         .style("stroke-width", 0)
                         .style("stroke-opacity", 0.0);
                     svg.select("circle.test-positive-circle").transition("tooltip").duration(DURATION)
@@ -141,6 +141,10 @@ var disease = (function(module) {
                         .style("stroke-opacity", 0.0);
                 })
                 .append("title");
+
+            svg.append("text")
+                .attr("class", "venn-label positive")
+                .text("Tested Positive");
         }
 
 
@@ -191,8 +195,12 @@ var disease = (function(module) {
                 .attr("r", popRad);
 
             var rot = 180/Math.PI * Math.asin(popRad / popCircleCenterX);
+            svg.selectAll("text.venn-label.positive")
+                .attr("x", centerX - 30)
+                .attr("y", 0.7 * chartHeight);
             svg.selectAll("text.venn-label.population")
                 .attr("transform", "rotate(" + -rot + " " + POP_LABEL_X + " " + POP_LABEL_Y + ")");
+
             svg.selectAll("circle.test-positive-circle")
                 .attr("cx", centerX)
                 .attr("cy", chartHeightD2)
