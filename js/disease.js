@@ -64,29 +64,42 @@ var disease = (function(module) {
 
         // Using integer values to avoid round of problems at the max valu
         probDiseasedSlider.slider({
-            value: initialPctDiseased * 100,
-            min: 1,
-            max: 2000.0,
-            step: 1,
+            value: Math.log10(initialPctDiseased),
+            min: -2,
+            max: 1.0,
+            step: 0.1,
             height: "10px",
-            slide: getSliderChangedHandler("#probability-diseased"),
+            slide: getSliderChangedHandler("#probability-diseased", pctDiseasedConverter),
             stop: clearThumbTip
         });
 
         testAccuracySlider.slider({
-            value: initialTestAccuracy * 100,
-            min: 8000,
-            max: 9990,  // for some reason only goes to 99.8
+            value: initialTestAccuracy * 10,
+            min: 800,
+            max: 999,  // for some reason only goes to 99.8
             step: 1,
-            slide: getSliderChangedHandler("#test-accuracy"),
+            slide: getSliderChangedHandler("#test-accuracy", testAccuracyConverter),
             stop: clearThumbTip
         });
     }
 
-    function getSliderChangedHandler(sliderEl) {
+    function pctDiseasedConverter(sliderValue) {
+        return disease.format(Math.pow(10, sliderValue), 2);
+    }
+
+    function testAccuracyConverter(sliderValue) {
+        return sliderValue / 10;
+    }
+
+    /**
+     * @param sliderEl jquery selector for slider
+     * @param convert function used to map slider value to actual value
+     * @returns {Function} slider changed callback
+     */
+    function getSliderChangedHandler(sliderEl, convert) {
         return function (event, ui) {
             // update value in text
-            var value = ui.value / 100;
+            var value = convert(ui.value);
             $(sliderEl).text(value);
 
             // current value (when sliding) or initial value (at start)
