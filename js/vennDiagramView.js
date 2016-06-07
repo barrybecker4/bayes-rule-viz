@@ -57,6 +57,12 @@ var disease = (function(module) {
                 .attr("fill-opacity", 0.2)
                 .attr("fill", disease.POSITIVE_COLOR);
 
+            svg.append("text")
+                .attr("class", "venn-label diseased")
+                .text("Diseased");
+            svg.append("line")
+                .attr("class", "venn-line diseased");
+            
             svg.append("circle")
                 .attr("class", "diseased-circle")
                 .attr("fill-opacity", 0.1).attr("fill", disease.DISEASED_COLOR)
@@ -145,11 +151,6 @@ var disease = (function(module) {
             svg.append("text")
                 .attr("class", "venn-label positive")
                 .text("Tested Positive");
-            svg.append("text")
-                .attr("class", "venn-label diseased")
-                .text("Diseased");
-            svg.append("line")
-                .attr("class", "venn-line diseased");
         }
 
 
