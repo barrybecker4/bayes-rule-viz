@@ -42,9 +42,19 @@
             </div>
         </div>
         <div id="bayes-rule-view"></div>
-
         <div id="venn-diagram-view"></div>
         <div id="sankey-view"></div>
-
+        <div id="notes">
+            <ul>
+                <li>p(<span class="diseased">D</span> | <span class="positive">positive</span>)
+                    means the probability of having the disease given that you have tested positive.
+                    This is the notation for representing a conditional probability.
+                </li>
+                <li>p(<span class="positive">positive</span> | <span class="diseased">D</span>) =
+                    p(<span class="negative">negative</span> | <span class="healthy">H</span>)
+                    = <span id="accurracy-fn">test accuracy, by definition.</span>
+                </li>
+            </ul>
+        </div>
     </body>
 </html>

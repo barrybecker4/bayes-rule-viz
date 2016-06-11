@@ -40,3 +40,7 @@ body {
     height: 650px;
 }
 
+#notes {
+    float: left;
+    width: 100%;
+}
