@@ -109,18 +109,7 @@ var disease = (function(module) {
             nodes.attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
-
-            var drag = d3.behavior.drag()
-                .origin(function (d) {
-                    return d;
-                })
-                .on("dragstart", function () {
-                    this.parentNode.appendChild(this);
-                })
-                .on("drag", dragmove);
-
-            nodeG.call(drag);
-
+            
             // add the rectangles for the nodes
             nodeG.append("rect")
                 .attr("width", sankey.nodeWidth())
@@ -195,18 +184,6 @@ var disease = (function(module) {
 
         function makeValid(s) {
             return s.replace(/ /g, "").replace(/,/g, "");
-        }
-
-
-        // the function for moving the nodes
-        function dragmove(d) {
-            d3.select(this).attr("transform",
-                "translate(" + d.x + "," + (
-                    d.y = Math.max(0, Math.min(height - d.dy, d3.event.y))
-                ) + ")");
-            sankey.relayout();
-            var path = sankey.link();
-            links.attr("d", path);
         }
 
         init();
