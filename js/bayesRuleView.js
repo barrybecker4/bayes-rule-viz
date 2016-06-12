@@ -5,7 +5,7 @@ var disease = (function(module) {
      * @param parentEl the selector for the element into which the bayesRuleView will be placed.
      * @param graph data
      */
-    module.bayesRuleView = function(parentEl, graph) {
+    module.bayesRuleView = function(parentEl, graph, totalPopulation) {
 
         var margin = {top: 10, right: 10, bottom: 10, left: 10};
         var root;
@@ -48,9 +48,11 @@ var disease = (function(module) {
             var numDiseased = graph.links[0].value + numPositiveAndDiseased;
             var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
             var probPositiveGivenDiseased = numPositiveAndDiseased / numDiseased;
-            bayesRule.find(".prob-diseased").text(numDiseased.toLocaleString());
+            var probDiseased = numDiseased / totalPopulation;
+            var probPositive = numPositive / totalPopulation;
+            bayesRule.find(".prob-diseased").text(disease.format(probDiseased, 5));
             bayesRule.find(".prob-pos-given-diseased").text(disease.format(probPositiveGivenDiseased, 4));
-            bayesRule.find(".prob-positive").text(numPositive.toLocaleString());
+            bayesRule.find(".prob-positive").text(disease.format(probPositive, 4));
 
             var probDiseasedGivenPositive = (100 * numDiseased * probPositiveGivenDiseased) / numPositive;
 

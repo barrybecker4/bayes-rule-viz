@@ -21,13 +21,12 @@ body {
 }
 
 .inputs {
-    width: 820px;
+    width: 830px;
 }
 
 #bayes-rule-view {
     width: 99%;
     padding: 10px;
-    //border: 1px solid blue;
 }
 #sankey-view {
     float: left;

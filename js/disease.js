@@ -43,7 +43,7 @@ var disease = (function(module) {
 
         initializeInputSection(initialPctDiseased, initialTestAccuracy);
 
-        bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph);
+        bayesRuleView = disease.bayesRuleView("#bayes-rule-view", graph, TOTAL_POPULATION);
         vennDiagramView = disease.vennDiagramView("#venn-diagram-view", graph, TOTAL_POPULATION);
         sankeyView = disease.sankeyView("#sankey-view", graph);
         updateViews();
@@ -120,6 +120,7 @@ var disease = (function(module) {
         var testNegButDiseased = (1.0 - testAccuracy) * diseasedPop;
         var testPositiveAndDiseased = diseasedPop - testNegButDiseased;
         var testPositiveButHealthy = healthyPop - testNegAndHealthy;
+        var testPositive = testPositiveAndDiseased + testPositiveButHealthy;
 
         graph.links = [
             {"source": 0, "target": 2, "value": testNegButDiseased},
@@ -127,7 +128,12 @@ var disease = (function(module) {
             {"source": 1, "target": 3, "value": testPositiveButHealthy},
             {"source": 1, "target": 4, "value": testNegAndHealthy}
         ];
-        //console.log(JSON.stringify(graph.links));
+        
+        // update footnote info
+        $("#num-positive").text(testPositive.toLocaleString());
+        $("#num-population").text(TOTAL_POPULATION.toLocaleString());
+        var probPositive = testPositive / TOTAL_POPULATION;
+        $("#prob-positive").text(disease.format(probPositive, 4));
 
         renderViews();
     }
