@@ -24,7 +24,6 @@ var disease = (function(module) {
 
     var sankeyView, vennDiagramView, bayesRuleView;
 
-
     /**
      * Initialize the module
      * @param totalPopulation - a number in the range [100, 1,000,000,000,000]
@@ -62,7 +61,7 @@ var disease = (function(module) {
         var probDiseasedSlider = $("#probability-diseased-slider");
         var testAccuracySlider = $("#test-accuracy-slider");
 
-        // Using integer values to avoid round of problems at the max valu
+        // Using integer values to avoid rounding problems at the max value
         probDiseasedSlider.slider({
             value: Math.log10(initialPctDiseased),
             min: -2,
@@ -148,7 +147,6 @@ var disease = (function(module) {
         $("#probability-diseased-slider").find('.ui-slider-handle').empty();
         $("#test-accuracy-slider").find('.ui-slider-handle').empty();
     }
-
 
     return module;
 } (disease || {}));
