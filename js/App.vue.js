@@ -1,9 +1,9 @@
-import HelloWorld from './HelloWorld.vue.js'
+import IntroductionContent from './IntroductionContent.vue.js'
 
 new Vue({
     el: "#app",
     components: {
-        HelloWorld,
+        IntroductionContent,
     },
 
     data() {
