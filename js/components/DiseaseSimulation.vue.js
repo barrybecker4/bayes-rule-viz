@@ -1,3 +1,7 @@
+import disease from './disease.js'
+import bayesRuleView from './bayesRuleView.js'
+import sankeyView from './sankeyView.js'
+import vennDiagramView from './vennDiagramView.js'
 
 export default {
    template: `
@@ -15,6 +19,19 @@ export default {
            <div id="venn-diagram-view"></div>
            <div id="sankey-view"></div>
       </div>`,
+
+   props: {
+     totalPopulation: 100000,
+     initialPctDiseased: 1,
+     initialTestAccuracy: 90,
+   },
+
+   mounted() {
+      disease.init(10000000);
+   },
+
+   methods: {
+   },
 
    data() {
      return {
