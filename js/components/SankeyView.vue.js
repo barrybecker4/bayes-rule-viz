@@ -1,69 +1,99 @@
-
-var disease = (function(module) {
-
-    /**
-     * Shows how the population is divided.
-     * @param parentEl the selector for the element into which the sankeyView will be placed
-     * @param graph the data to be graphed with sankey
-     */
-    module.sankeyView = function(parentEl, graph) {
-
-        var margin = {top: 10, right: 10, bottom: 10, left: 10};
-
-        var colorScale = d3.scale.ordinal()
-            .range([disease.DISEASED_COLOR, disease.HEALTHY_COLOR, disease.TEST_NEG_DISEASED, disease.POSITIVE_COLOR, disease.TEST_NEG_HEALTHY])
-            .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
-        
-        var sankey = d3.sankey()
-            .nodeWidth(15)
-            .nodePadding(30);
-
-        var defs, linksEl, nodesEl;
-        var width, height;
-        var links;
-        
-        var my = {};
+import diseaseConstants from './diseaseConstants.js'
 
 
-        /** Add the initial svg structure */
-        function init() {
-            var svg = d3.selectAll(parentEl).append("svg")
-                .append("g")
-                .attr("transform",
-                    "translate(" + margin.left + "," + margin.top + ")");
+let colorScale = d3.scale.ordinal()
+    .range([
+        diseaseConstants.DISEASED_COLOR,
+        diseaseConstants.HEALTHY_COLOR,
+        diseaseConstants.TEST_NEG_DISEASED,
+        diseaseConstants.POSITIVE_COLOR,
+        diseaseConstants.TEST_NEG_HEALTHY
+        ])
+    .domain(["diseased", "healthy", "test-negative-diseased", "test-positive", "test-negative-healthy"]);
 
-            defs = svg.append("defs");
-            linksEl = svg.append("g");
-            nodesEl = svg.append("g");
-        }
+function getLinkID(d) {
+   return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);
+};
+
+function nodeColor(d) {
+   return d.color = colorScale(makeValid(d.name));
+};
+
+function makeValid(s) {
+   return s.replace(/ /g, "").replace(/,/g, "");
+}
+
+let sankey = d3.sankey()
+    .nodeWidth(15)
+    .nodePadding(30);
+
+let defs, linksEl, nodesEl;
+let width, height;
+let links;
+let margin = {top: 10, right: 10, bottom: 10, left: 10};
 
 
-        /** update the sanky diagram */
-        my.render = function() {
-            var chartWidth = $(parentEl).width();
-            var chartHeight = $(parentEl).height();
-            width = chartWidth - margin.left - margin.right;
-            height = chartHeight - margin.top - margin.bottom;
+export default {
 
-            // append the svg canvas to the page
-            var svg = d3.select(parentEl + " svg")
-                .attr("width", chartWidth)
-                .attr("height", chartHeight);
+   template: `<div id="sankey-view"></div>`,
 
-            // Set the sankey diagram properties
-            sankey
-                .size([width, height])
-                .nodes(graph.nodes)
-                .links(graph.links)
-                .layout(0);  // 32
+   props: {
+     graph: {},
+     probDiseased: 0,
+     testAccuracy: 0,
+   },
 
-            addColorGradients();
-            addLinks();
-            addNodes();
-        };
+   mounted() {
+       this.init();
+   },
 
-        function addLinks() {
-            links = linksEl.selectAll(".link").data(graph.links, getLinkID);
+   watch: {
+       probDiseased: function() { this.render(); },
+       testAccuracy: function() { this.render(); },
+   },
+
+   methods: {
+       /** Add the initial svg structure */
+       init: function() {
+              var svg = d3.selectAll("#sankey-view").append("svg")
+                  .append("g")
+                  .attr("transform",
+                      "translate(" + margin.left + "," + margin.top + ")");
+
+              defs = svg.append("defs");
+              linksEl = svg.append("g");
+              nodesEl = svg.append("g");
+
+              $(window).resize(this.render);
+        },
+
+       /** update the sankey diagram */
+       render: function() {
+           let el = $(this.$el);
+           let chartWidth = el.width();
+           let chartHeight = el.height();
+           width = chartWidth - margin.left - margin.right;
+           height = chartHeight - margin.top - margin.bottom;
+
+           // append the svg canvas to the page
+           let svg = d3.select("#" + this.$el.id + " svg")
+               .attr("width", chartWidth)
+               .attr("height", chartHeight);
+
+           // Set the sankey diagram properties
+           sankey
+               .size([width, height])
+               .nodes(this.graph.nodes)
+               .links(this.graph.links)
+               .layout(0);  // 32
+
+           this.addColorGradients();
+           this.addLinks();
+           this.addNodes();
+       },
+
+       addLinks: function() {
+            links = linksEl.selectAll(".link").data(this.graph.links, getLinkID);
 
             var linkEnter = links.enter()
                 .append("path")
@@ -89,17 +119,17 @@ var disease = (function(module) {
                     var data = d3.select(this.parentNode).datum();
                     return d.source.name + " -> " + d.target.name + " (" + data.value.toLocaleString() + " people)";
                 });
-        }
+       },
 
-        /**
-         * consider foreign object for html styling
-         * <foreignobject x="10" y="10" width="100" height="150">
-         *   <body xmlns="http://www.w3.org/1999/xhtml">
-         *   <div>Here is a <strong>paragraph</strong> that requires <em>word wrap</em></div>
-         *  </body>
-         */
-        function addNodes() {
-            var nodes = nodesEl.selectAll(".node").data(graph.nodes);
+       /**
+        * consider foreign object for html styling
+        * <foreignobject x="10" y="10" width="100" height="150">
+        *   <body xmlns="http://www.w3.org/1999/xhtml">
+        *   <div>Here is a <strong>paragraph</strong> that requires <em>word wrap</em></div>
+        *  </body>
+        */
+       addNodes: function() {
+            var nodes = nodesEl.selectAll(".node").data(this.graph.nodes);
 
             var nodeEnter = nodes.enter();
 
@@ -109,7 +139,7 @@ var disease = (function(module) {
             nodes.attr("transform", function (d) {
                     return "translate(" + d.x + "," + d.y + ")";
                 });
-            
+
             // add the rectangles for the nodes
             nodeG.append("rect")
                 .attr("width", sankey.nodeWidth())
@@ -147,13 +177,13 @@ var disease = (function(module) {
                 .attr("y", function (d) {
                     return d.dy / 2;
                 });
-        }
+        },
 
         /** add link color gradients */
-        function addColorGradients() {
+       addColorGradients: function() {
 
             var grads = defs.selectAll("linearGradient")
-                .data(graph.links, getLinkID);
+                .data(this.graph.links, getLinkID);
 
             grads.enter().append("linearGradient")
                 .attr("id", getLinkID)
@@ -172,23 +202,6 @@ var disease = (function(module) {
                 .attr("stop-color", function (d) {
                     return nodeColor((+d.source.x > +d.target.x) ? d.source : d.target)
                 });
-        }
-
-        function getLinkID(d) {
-            return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);
-        }
-
-        function nodeColor(d) {
-            return d.color = colorScale(makeValid(d.name));
-        }
-
-        function makeValid(s) {
-            return s.replace(/ /g, "").replace(/,/g, "");
-        }
-
-        init();
-        return my;
-    };
-
-    return module;
-} (disease || {}));
+       },
+    },
+}

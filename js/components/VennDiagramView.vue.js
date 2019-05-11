@@ -1,36 +1,47 @@
-var disease = (function(module) {
+import diseaseConstants from './diseaseConstants.js'
 
-    /**
-     * @param parentEl the selector for the element into which the vennDiagramView will be placed
-     * @param graph data
-     * @param totalPopulation some big number
-     */
-    module.vennDiagramView = function(parentEl, graph, totalPopulation) {
+/** all circles will be relative to the test positive circle */
+let TEST_POS_CIRCLE_RADIUS = 250;
+let DURATION = 300;
+let POP_LABEL_X = 100;
+let POP_LABEL_Y = 260;
 
-        var margin = {top: 10, right: 10, bottom: 10, left: 10};
+let margin = {top: 10, bottom: 10, left: 10};
 
-        /** all circles will be relative to the test positive circle */
-        var TEST_POS_CIRCLE_RADIUS = 250;
-        var DURATION = 300;
-        var POP_LABEL_X = 100;
-        var POP_LABEL_Y = 260;
+export default {
 
-        var my = {};
+   template: `<div id="venn-diagram-view"></div>`,
 
+   props: {
+     graph: {},
+     totalPopulation: 0,
+     probDiseased: 0,
+     testAccuracy: 0,
+   },
 
-        /** Add the initial svg structure */
-        function init() {
+   mounted() {
+       this.init();
+   },
+
+   watch: {
+       probDiseased: function() { this.render(); },
+       testAccuracy: function() { this.render(); },
+   },
+
+   methods: {
+
+       /** Add the initial svg structure */
+       init: function() {
             // append the svg canvas to the page
-            var rootSvg = d3.selectAll(parentEl).append("svg");
+            var rootSvg = d3.selectAll("#venn-diagram-view").append("svg");
             var svg = rootSvg.append("g")
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
-
             svg.append("circle")
                 .attr("class", "population-circle")
                 .attr("fill-opacity", 0.3)
-                .attr("fill", disease.TEST_NEG_HEALTHY)
+                .attr("fill", diseaseConstants.TEST_NEG_HEALTHY)
                 .on("mouseover", function(d) {
                     d3.select(this).transition("tooltip").duration(DURATION)
                         .style("stroke", "black")
@@ -44,7 +55,7 @@ var disease = (function(module) {
                         .style("stroke-width", 0)
                         .style("stroke-opacity", 0.0);
                 })
-                .append("title").text("The whole population of " + totalPopulation.toLocaleString() +
+                .append("title").text("The whole population of " + this.totalPopulation.toLocaleString() +
                     " people. \nThose outside the red circle are healthy");
             svg.append("text")
                 .attr("class", "venn-label population")
@@ -55,17 +66,17 @@ var disease = (function(module) {
             svg.append("circle")
                 .attr("class", "test-positive-circle")
                 .attr("fill-opacity", 0.2)
-                .attr("fill", disease.POSITIVE_COLOR);
+                .attr("fill", diseaseConstants.POSITIVE_COLOR);
 
             svg.append("text")
                 .attr("class", "venn-label diseased")
                 .text("Diseased");
             svg.append("line")
                 .attr("class", "venn-line diseased");
-            
+
             svg.append("circle")
                 .attr("class", "diseased-circle")
-                .attr("fill-opacity", 0.1).attr("fill", disease.DISEASED_COLOR)
+                .attr("fill-opacity", 0.1).attr("fill", diseaseConstants.DISEASED_COLOR)
                 .append("title");
 
             svg.append("path")
@@ -99,7 +110,7 @@ var disease = (function(module) {
             svg.append("path")
                 .attr("class", "test-negative-diseased-intersection")
                 .attr("fill-opacity", 0.6)
-                .attr("fill", disease.TEST_NEG_DISEASED)
+                .attr("fill", diseaseConstants.TEST_NEG_DISEASED)
                 .on("mouseover", function(d) {
                     d3.select(this).transition("tooltip").duration(DURATION)
                         .style("stroke", "black")
@@ -151,57 +162,59 @@ var disease = (function(module) {
             svg.append("text")
                 .attr("class", "venn-label positive")
                 .text("Tested Positive");
-        }
 
+            $(window).resize(this.render);
+        },
 
-        /** update the Venn diagram */
-        my.render = function() {
-            var chartWidth = $(parentEl).width();
-            var chartHeight = $(parentEl).height();
-            var chartWidthD2 = chartWidth / 2;
-            var chartHeightD2 = chartHeight / 2 + 30;
+       /** update the Venn diagram */
+       render: function() {
+            let el = $(this.$el);
+            let chartWidth = el.width();
+            let chartHeight = el.height();
+            let chartWidthD2 = chartWidth / 2;
+            let chartHeightD2 = chartHeight / 2 + 30;
 
-            var svg = d3.select(parentEl + " svg")
+            let svg = d3.select("#" + this.$el.id + " svg")
                 .attr("width", chartWidth)
                 .attr("height", chartHeight);
 
-            var numPositiveAndDiseased = graph.links[1].value;
-            var numPositiveAndHealthy =  graph.links[2].value;
-            var testNegButDiseased = Math.round(graph.links[0].value);
-            var numDiseased = testNegButDiseased + numPositiveAndDiseased;
-            var numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
+            let numPositiveAndDiseased = this.graph.links[1].value;
+            let numPositiveAndHealthy =  this.graph.links[2].value;
+            let testNegButDiseased = Math.round(this.graph.links[0].value);
+            let numDiseased = testNegButDiseased + numPositiveAndDiseased;
+            let numPositive = numPositiveAndDiseased + numPositiveAndHealthy;
 
-            var testPositiveRad = TEST_POS_CIRCLE_RADIUS;
-            var scaleFactor = Math.sqrt(totalPopulation / numPositive);
-            var diseasedRad = testPositiveRad * Math.sqrt(numDiseased / numPositive);
-            var popRad = testPositiveRad * scaleFactor;
-            var popArea = Math.PI = popRad * popRad;
-            var diseaseArea = Math.PI * diseasedRad * diseasedRad;
-            var overlap = (numPositiveAndDiseased / numDiseased) * diseaseArea;
+            let testPositiveRad = TEST_POS_CIRCLE_RADIUS;
+            let scaleFactor = Math.sqrt(this.totalPopulation / numPositive);
+            let diseasedRad = testPositiveRad * Math.sqrt(numDiseased / numPositive);
+            let popRad = testPositiveRad * scaleFactor;
+            let popArea = Math.PI * popRad * popRad;
+            let diseaseArea = Math.PI * diseasedRad * diseasedRad;
+            let overlap = (numPositiveAndDiseased / numDiseased) * diseaseArea;
             /*console.log("diseaseArea = "+ diseaseArea + "overlap="+ overlap
                 + " numPosAndD="+ numPositiveAndDiseased + " numDis="+ numDiseased);
             console.log("diseaseArea= " + diseaseArea + " popArea= "+ popArea
-                + " numDiseased= " + numDiseased + " pop= " + totalPopulation
-                + " rat1=" + diseaseArea/popArea + " rat2="+ numDiseased/totalPopulation);
+                + " numDiseased= " + numDiseased + " pop= " + this.totalPopulation
+                + " rat1=" + diseaseArea/popArea + " rat2="+ numDiseased/this.totalPopulation);
             console.log("numPositiveAndDiseased = " + numPositiveAndDiseased + " numDiseased = "
              + numDiseased + " overlap="+ overlap); */
-            var distance = findCircleSeparation({
+            let distance = this.findCircleSeparation({
                 radiusA: testPositiveRad,
                 radiusB: diseasedRad,
                 overlap: overlap
             });
 
-            var centerX = chartWidthD2 + testPositiveRad - 180;
-            var diseasedCenterY = chartHeightD2 - distance;
-            var popCircleCenterX = Math.max(chartWidthD2 - popRad, 0) + popRad + 40;
+            let centerX = chartWidthD2 + testPositiveRad - 180;
+            let diseasedCenterY = chartHeightD2 - distance;
+            let popCircleCenterX = Math.max(chartWidthD2 - popRad, 0) + popRad + 40;
 
             svg.selectAll("circle.population-circle")
                 .attr("cx", popCircleCenterX)
                 .attr("cy", chartHeightD2)
                 .attr("r", popRad);
 
-            var rot = 180/Math.PI * Math.asin(popRad / popCircleCenterX);
-            var diseasedTop = diseasedCenterY - diseasedRad;
+            let rot = 180 / Math.PI * Math.asin(popRad / popCircleCenterX);
+            let diseasedTop = diseasedCenterY - diseasedRad;
             svg.selectAll("text.venn-label.positive")
                 .attr("x", centerX - 30)
                 .attr("y", 0.7 * chartHeight);
@@ -217,7 +230,6 @@ var disease = (function(module) {
             svg.selectAll("text.venn-label.population")
                 .attr("transform", "rotate(" + -rot + " " + POP_LABEL_X + " " + POP_LABEL_Y + ")");
 
-
             svg.selectAll("circle.test-positive-circle")
                 .attr("cx", centerX)
                 .attr("cy", chartHeightD2)
@@ -230,39 +242,39 @@ var disease = (function(module) {
 
             // Draw paths for 2 halves of disease circle - the part in the intersection, and outsied of it.
             // See https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
-            var pdPath = svg.selectAll("path.test-positive-diseased-intersection");
-            var pctDiseasedGivenPositive = disease.format(100 * numPositiveAndDiseased / numPositive, 2);
-            pdPath.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
+            let pdPath = svg.selectAll("path.test-positive-diseased-intersection");
+            let pctDiseasedGivenPositive = diseaseConstants.format(100 * numPositiveAndDiseased / numPositive, 2);
+            pdPath.attr("d", this.pathFunc(centerX, chartHeightD2, testPositiveRad,
                     centerX, diseasedCenterY, diseasedRad, 0, 1,   1, 1));
             pdPath.select("title").text(numPositiveAndDiseased.toLocaleString() +
                 " (" + pctDiseasedGivenPositive + "%) " + " of the " +
                 numPositive.toLocaleString() +
                 " that tested positive\nactually have the disease.");
 
-            var ndPath = svg.selectAll("path.test-negative-diseased-intersection");
-            ndPath.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
+            let ndPath = svg.selectAll("path.test-negative-diseased-intersection");
+            ndPath.attr("d", this.pathFunc(centerX, chartHeightD2, testPositiveRad,
                 centerX, diseasedCenterY, diseasedRad, 0, 1,  0, 0));
             ndPath.select("title").text(testNegButDiseased.toLocaleString() + " out of "
                 + numDiseased.toLocaleString() + "\nwith the disease test negative.");
 
-            var phPath = svg.selectAll("path.test-positive-healthy-intersection");
-            phPath.attr("d", pathFunc(centerX, chartHeightD2, testPositiveRad,
+            let phPath = svg.selectAll("path.test-positive-healthy-intersection");
+            phPath.attr("d", this.pathFunc(centerX, chartHeightD2, testPositiveRad,
                 centerX, diseasedCenterY, diseasedRad, 1, 0,  1, 1));
             phPath.select("title")
                 .text(numPositiveAndHealthy.toLocaleString()  + " are healthy out of the\n" +
                     numPositive.toLocaleString() + " that tested positive.");
-        };
+        },
 
-        var pathFunc = function(x1, y1, rad1, x2, y2, rad2, largeArcFlag1, sweepFlag1, largeArcFlag2, sweepFlag2) {
-            var interPoints = circleIntersection(x1, y1, rad1,  x2, y2, rad2);
-            var rotation = 0;
-            return "M" +
+       pathFunc: function(x1, y1, rad1, x2, y2, rad2, largeArcFlag1, sweepFlag1, largeArcFlag2, sweepFlag2) {
+           let interPoints = this.circleIntersection(x1, y1, rad1,  x2, y2, rad2);
+           let rotation = 0;
+           return "M" +
                 interPoints[0] + "," + interPoints[2] + "A" + rad2 + "," + rad2 + " " + rotation + " " +
                 largeArcFlag2 + " " + sweepFlag2 + " " +
                 interPoints[1] + "," + interPoints[3]+ "A" + rad1 + "," + rad1 +  " " + rotation + " " +
                 largeArcFlag1 + " " + sweepFlag1 + " " +
                 interPoints[0] + "," + interPoints[2];
-        };
+       },
 
         /**
          * Given circle A with radiusA, and circle B with radiusB, and a desired amount of overlap,
@@ -270,67 +282,66 @@ var disease = (function(module) {
          *
          * Circle A is at the origin. Circle B starts radA + radB to the right where intersection = 0.
          * When they are both at the origin, the overlap is min(areaA, areaB)
-         * Move them closer until the amount of overlap is equal to the overlap.
+         * Move them closer until the amount of overlap is equal to the desired overlap.
          *
          * @param circleInfo radiusA, radiusB, overlap
          * @return the center distance between circles A and B.
          */
-        var findCircleSeparation = function(circleInfo) {
+       findCircleSeparation: function(circleInfo) {
 
-            var radA = circleInfo.radiusA;
-            var radB = circleInfo.radiusB;
-            var radAsq = radA * radA;
-            var radBsq = radB * radB;
-            var maxDistance = radA + radB;
-            var maxOverlap = Math.PI * Math.min(radAsq, radBsq);
-            //console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance
-            // + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
+           let radA = circleInfo.radiusA;
+           let radB = circleInfo.radiusB;
+           let radAsq = radA * radA;
+           let radBsq = radB * radB;
+           let maxDistance = radA + radB;
+           let maxOverlap = Math.PI * Math.min(radAsq, radBsq);
+           //console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance
+           // + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
 
-
-            // This function returns the area of intersection when the two circles are x apart.
-            var y = function (x) {
-                if (x == 0) {
-                    return maxOverlap;
-                }
-                var cosCBD = (radBsq + x * x - radAsq) / (2.0 * radB * x);
-                var cosCAD = (radAsq + x * x - radBsq) / (2.0 * radA * x);
-                if (Math.abs(cosCBD) > 1 || Math.abs(cosCAD) > 1) {
-                    // then the two circles do not intersect at all
-                    return maxOverlap;
-                }
-                var angleCBD = 2.0 * Math.acos(cosCBD);
-                var angleCAD = 2.0 * Math.acos(cosCAD);
-                return 0.5 * (angleCBD * radBsq - radBsq * Math.sin(angleCBD)
-                    + angleCAD * radAsq - radAsq * Math.sin(angleCAD));
+           // This function returns the area of intersection when the two circles are x apart.
+           let y = function (x) {
+               if (x == 0) {
+                   return maxOverlap;
+               }
+               let cosCBD = (radBsq + x * x - radAsq) / (2.0 * radB * x);
+               let cosCAD = (radAsq + x * x - radBsq) / (2.0 * radA * x);
+               if (Math.abs(cosCBD) > 1 || Math.abs(cosCAD) > 1) {
+                   // then the two circles do not intersect at all
+                   return maxOverlap;
+               }
+               let angleCBD = 2.0 * Math.acos(cosCBD);
+               let angleCAD = 2.0 * Math.acos(cosCAD);
+               return 0.5 * (angleCBD * radBsq - radBsq * Math.sin(angleCBD)
+                   + angleCAD * radAsq - radAsq * Math.sin(angleCAD));
             };
 
-            return findXForY(circleInfo.overlap, y, maxDistance, maxOverlap);
-        };
+            return this.findXForY(circleInfo.overlap, y, maxDistance, maxOverlap);
+       },
 
         /**
          * @param overlap the overlapping area value we want to find x for.
          * @param y the function of x that will yield the support value.
-         * @param maxDistance the maximum distance the two circles can be appart before they no longer overlap.
+         * @param maxDistance the maximum distance the two circles can be apart before they no longer overlap.
          * @param maxOverlap the maximum amount of overlap possible. The min of the two circle areas.
          * @return the x value for the given y(x)
          */
-        var findXForY = function(overlap, y, maxDistance, maxOverlap) {
+        findXForY: function(overlap, y, maxDistance, maxOverlap) {
 
             // if they totally overlay, then we know the distance is 0;
             if (overlap == maxOverlap) {
                 return 0;
             }
-            var lower = 0;
-            var upper = maxDistance;
-            var currentGuess = maxDistance / 2.0;
-            var currentY = y(currentGuess);
+            let lower = 0;
+            let upper = maxDistance;
+            let currentGuess = maxDistance / 2.0;
+            let currentY = y(currentGuess);
             if (isNaN(currentY)) {
                 throw "y is NaN for " + currentGuess;
             }
-            var EPS = 0.05;
+            let EPS = 0.05;
             // if an answer is not found after 20 iterations something is wrong
-            var MAX_ITERATIONS = 30;
-            var ct = 0;
+            let MAX_ITERATIONS = 30;
+            let ct = 0;
 
             while (Math.abs(overlap - currentY) > EPS && ct++ < MAX_ITERATIONS) {
                 if (currentY > overlap) {
@@ -355,15 +366,16 @@ var disease = (function(module) {
                 + maxOverlap + " and maxDistance is " + maxDistance + ". Current range = [" + lower + ", " + upper + "]";
             }
             return currentGuess;
-        };
+        },
 
         /**
          * @return the points that define the intersection region of two circles.
          */
-        function circleIntersection(x0, y0, r0, x1, y1, r1) {
-            var a, dx, dy, distance, h, rx, ry;
-            var x2, y2;
+        circleIntersection: function(x0, y0, r0, x1, y1, r1) {
+            let a, dx, dy, distance, h, rx, ry;
+            let x2, y2;
 
+            //console.log(`p1=${x0} ${y0}, p2=${x1} ${y1}`)
             dx = x1 - x0;
             dy = y1 - y0;
             distance = Math.sqrt((dy * dy) + (dx * dx));
@@ -394,18 +406,12 @@ var disease = (function(module) {
             ry = dx * (h / distance);
 
             // Determine the absolute intersection points.
-            var xi = x2 + rx;
-            var xi_prime = x2 - rx;
-            var yi = y2 + ry;
-            var yi_prime = y2 - ry;
+            let xi = x2 + rx;
+            let xi_prime = x2 - rx;
+            let yi = y2 + ry;
+            let yi_prime = y2 - ry;
 
             return [xi, xi_prime, yi, yi_prime];
-        }
-
-        init();
-        return my;
-    };
-
-
-    return module;
-} (disease || {}));
+        },
+   }
+}
