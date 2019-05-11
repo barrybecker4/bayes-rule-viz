@@ -4,7 +4,7 @@ export default {
            <p>Suppose your doctor tests you for a terrible disease, and the results are
                <span class="positive">positive</span>!
                How worried should you be?
-               <a href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes\' theorem</a>,
+               <a href="https://en.wikipedia.org/wiki/Bayes%27_theorem">Bayes' theorem</a>,
                can be used to answer this question.
            </p>
 
