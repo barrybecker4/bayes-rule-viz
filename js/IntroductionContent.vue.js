@@ -13,6 +13,7 @@ export default {
                and <span class="healthy">H</span> = <span class="healthy">Healthy</span>.
            </p>
       </div>`,
+
    data() {
      return {
        msg: "Hello another World!"
