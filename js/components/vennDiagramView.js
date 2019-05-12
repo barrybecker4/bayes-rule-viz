@@ -283,8 +283,8 @@ export default function(parentEl, graph, totalPopulation) {
         var radBsq = radB * radB;
         var maxDistance = radA + radB;
         var maxOverlap = Math.PI * Math.min(radAsq, radBsq);
-        console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance
-         + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
+        //console.log("radA=" + radA + " radB="+ radB + " maxDist=" + maxDistance
+        // + " maxOver="+ maxOverlap + " overlap=" + circleInfo.overlap);
 
 
         // This function returns the area of intersection when the two circles are x apart.
@@ -368,7 +368,6 @@ export default function(parentEl, graph, totalPopulation) {
         dx = x1 - x0;
         dy = y1 - y0;
         distance = Math.sqrt((dy * dy) + (dx * dx));
-        console.log("dist ="  + distance + " r0=" + r0 + " r1=" + r1)
 
         if (distance > (r0 + r1)) {
             throw "No solution. circles do not intersect";
