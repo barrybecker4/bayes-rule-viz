@@ -43,7 +43,7 @@ export default function(parentEl, graph) {
     }
 
 
-    /** update the sanky diagram */
+    /** update the sankey diagram */
     my.render = function() {
         var chartWidth = $(parentEl).width();
         var chartHeight = $(parentEl).height();
