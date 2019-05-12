@@ -3,11 +3,28 @@ import diseaseConstants from './diseaseConstants.js'
 
 export default {
 
-   template: `<div id="bayes-rule-view"></div>`,
+   template: `<div>
+       <table class="bayes-rule-exp" align="center" cellpadding="0" cellspacing="0">
+           <tr>
+               <td rowspan="2" nowrap="nowrap"> p(<span class="diseased">D</span> | <span class="positive">positive</span>)&nbsp; = &nbsp;</td>
+               <td class="numerator"> p(<span class="diseased">D</span>) &nbsp; p(<span class="positive">positive</span> | <span class="diseased">D</span>) </td>
+               <td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>
+               <td class="numerator"><span class="prob-diseased"></span> * <span class="prob-pos-given-diseased"></span></td>
+               <td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>
+               <td rowspan="2" width="100%"> <span class="prob-diseased-result"></span>&nbsp;</span> chance that you are infected. <span class="prob-diseased-worry"></span></td>
+           </tr>
+           <tr>
+               <td class="upper_line">p(<span class="positive">positive</span>)</td>
+               <td class="upper_line"><span class="prob-positive"></span></td>
+           </tr>
+       </table>
+   </div>`,
 
    props: {
-     'graph',
-     'totalPopulation',
+     graph: {},
+     totalPopulation: 0,
+     probDiseased: 0,
+     testAccuracy: 0,
    },
 
    data() {
@@ -17,41 +34,24 @@ export default {
    },
 
    mounted() {
-       this.init();
-       this.render();
    },
 
    watch: {
        // whenever question changes, this function will run
-       graph: function() {
-           render();
+       graph: function() {  render(); },
+       probDiseased: function() {
+           this.render();
+       },
+       testAccuracy: function() {
+           this.render();
        },
    },
 
    methods: {
-       /** Add the initial svg structure */
-       init: function() {
-           var bayesRuleExp = $("" +
-              '<table class="bayes-rule-exp" align="center" cellpadding="0" cellspacing="0">' +
-              '<tr>' +
-              '<td rowspan="2" nowrap="nowrap"> p(<span class="diseased">D</span> | <span class="positive">positive</span>)&nbsp; = &nbsp;</td>' +
-              '<td class="numerator"> p(<span class="diseased">D</span>) &nbsp; p(<span class="positive">positive</span> | <span class="diseased">D</span>) </td>' +
-              '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>' +
-              '<td class="numerator"><span class="prob-diseased"></span> * <span class="prob-pos-given-diseased"></span></td>' +
-              '<td rowspan="2" nowrap="nowrap"> &nbsp; = &nbsp;</td>' +
-              '<td rowspan="2" width="100%"> <span class="prob-diseased-result"></span>&nbsp;</span> chance that you are infected. <span class="prob-diseased-worry"></span></td>' +
-              '</tr>' +
-              '<tr>' +
-              '<td class="upper_line">p(<span class="positive">positive</span>)</td>' +
-              '<td class="upper_line"><span class="prob-positive"></span></td>' +
-              '</tr>' +
-              '</table>');
-           this.$el.append(bayesRuleExp);
-       },
 
        /** update the Bayes rule formula with the current numbers */
        render: function() {
-           var bayesRule = $(".bayes-rule-exp");
+           var bayesRule = $(this.$el).find(".bayes-rule-exp");
            var numPositiveAndDiseased = this.graph.links[1].value;
            var numPositiveAndHealthy =  this.graph.links[2].value;
            var numDiseased = this.graph.links[0].value + numPositiveAndDiseased;
@@ -65,7 +65,7 @@ export default {
 
            var probDiseasedGivenPositive = (100 * numDiseased * probPositiveGivenDiseased) / numPositive;
 
-           var worryAttrs = getWorryAttrs(probDiseasedGivenPositive);
+           var worryAttrs = this.getWorryAttrs(probDiseasedGivenPositive);
            bayesRule.find(".prob-diseased-result").text(diseaseConstants.format(probDiseasedGivenPositive, 2) + "%  ");
            bayesRule.find(".prob-diseased-worry").text(worryAttrs.howMuch).css("color", worryAttrs.color);
        },

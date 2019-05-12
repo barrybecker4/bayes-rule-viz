@@ -1,3 +1,4 @@
+import BayesRuleView from './BayesRuleView.vue.js'
 import sankeyView from './sankeyView.js'
 import vennDiagramView from './vennDiagramView.js'
 import diseaseConstants from './diseaseConstants.js'
@@ -8,30 +9,38 @@ import diseaseConstants from './diseaseConstants.js'
  * https://www.mathsisfun.com/data/probability-false-negatives-positives.html
  */
 
-let TOTAL_POPULATION;
 let sankeyViewer, vennDiagramViewer;
 
 export default {
-   template: `
-      <div>
-           <div class="inputs">
-           <span class="input-line">The incidence of the disease in the population is
+
+    components: {
+        BayesRuleView,
+    },
+    template: `
+        <div>
+            <div class="inputs">
+            <span class="input-line">The incidence of the disease in the population is
                <span id="probability-diseased"></span>%
                <span id="probability-diseased-slider" class="slider"></span>
-           </span>
+            </span>
                <div class="input-line">The disease testing accuracy is <span id="test-accuracy"></span>%
                    <div id="test-accuracy-slider" class="slider"></div>
                </div>
-           </div>
-           <bayes-rule-view></bayes-rule-view>
-           <div id="venn-diagram-view"></div>
-           <div id="sankey-view"></div>
-      </div>`,
+            </div>
+            <bayes-rule-view
+               :graph="this.graph"
+               :totalPopulation="this.totalPopulation"
+               :probDiseased="this.probDiseased"
+               :testAccuracy="this.testAccuracy">
+            </bayes-rule-view>
+            <div id="venn-diagram-view"></div>
+            <div id="sankey-view"></div>
+        </div>`,
 
    props: {
-     totalPopulation: 100000,
-     initialPctDiseased: 1,
-     initialTestAccuracy: 90,
+     totalPopulation: 100000, //  a number in the range [100, 1,000,000,000,000]
+     initialPctDiseased: 1,  //  probability of having the disease. In range [0.1, 10]
+     initialTestAccuracy: 90, // percent of time that the test is correct. In range [90, 99.5]
    },
 
    data() {
@@ -44,47 +53,39 @@ export default {
                    {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
                    {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
                ]
-           }
+           },
+           probDiseased: this.initialPctDiseased,
+           testAccuracy: this.initialTestAccuracy,
        }
    },
 
    mounted() {
-       this.init(this.totalPopulation, this.initialPctDiseased, this.initialTestAccuracy);
+       this.init();
    },
 
    methods: {
-       /**
-        * Initialize the module
-        * @param totalPopulation - a number in the range [100, 1,000,000,000,000]
-        * @param initialPctDiseased - probability of having the disease. In range [0.1, 10]
-        * @param initialTestAccuracy - percent of time that the test is correct. In range [90, 99.5]
-        */
-       init: function(totalPopulation, initialPctDiseased, initialTestAccuracy) {
+       init: function() {
 
-            initialPctDiseased = initialPctDiseased ? initialPctDiseased : 1;
-            initialTestAccuracy = initialTestAccuracy ? initialTestAccuracy : 90;
-            TOTAL_POPULATION = totalPopulation;
+            $("#total-population").text(this.totalPopulation.toLocaleString());
+            $("#probability-diseased").text(this.initialPctDiseased);
+            $("#test-accuracy").text(this.initialTestAccuracy);
 
-            $("#total-population").text(TOTAL_POPULATION.toLocaleString());
-            $("#probability-diseased").text(initialPctDiseased);
-            $("#test-accuracy").text(initialTestAccuracy);
+            this.initializeInputSection(this.initialPctDiseased, this.initialTestAccuracy);
 
-            this.initializeInputSection(initialPctDiseased, initialTestAccuracy);
-
-            //bayesRuleViewer = bayesRuleView("#bayes-rule-view", this.graph, TOTAL_POPULATION);
-            vennDiagramViewer = vennDiagramView("#venn-diagram-view", this.graph, TOTAL_POPULATION);
+            //bayesRuleViewer = bayesRuleView("#bayes-rule-view", this.graph, this.totalPopulation);
+            vennDiagramViewer = vennDiagramView("#venn-diagram-view", this.graph, this.totalPopulation);
             sankeyViewer = sankeyView("#sankey-view", this.graph);
             this.updateViews();
 
-            $(window).resize(renderViews);
+            $(window).resize(this.renderViews);
         },
 
         /**
          * Show two sliders that allow changing the incidence and accuracy.
          */
         initializeInputSection: function(initialPctDiseased, initialTestAccuracy) {
-            var probDiseasedSlider = $("#probability-diseased-slider");
-            var testAccuracySlider = $("#test-accuracy-slider");
+            let probDiseasedSlider = $("#probability-diseased-slider");
+            let testAccuracySlider = $("#test-accuracy-slider");
 
             // Using integer values to avoid rounding problems at the max value
             probDiseasedSlider.slider({
@@ -136,13 +137,13 @@ export default {
         },
 
         updateViews: function() {
-            var probDiseased = parseFloat($("#probability-diseased").text()) / 100.0;
-            var testAccuracy = parseFloat($("#test-accuracy").text()) / 100.0;
+            this.probDiseased = parseFloat($("#probability-diseased").text()) / 100.0;
+            this.testAccuracy = parseFloat($("#test-accuracy").text()) / 100.0;
 
-            var diseasedPop = probDiseased * TOTAL_POPULATION;
-            var healthyPop = TOTAL_POPULATION - diseasedPop;
-            var testNegAndHealthy = testAccuracy * healthyPop;
-            var testNegButDiseased = (1.0 - testAccuracy) * diseasedPop;
+            var diseasedPop = this.probDiseased * this.totalPopulation;
+            var healthyPop = this.totalPopulation - diseasedPop;
+            var testNegAndHealthy = this.testAccuracy * healthyPop;
+            var testNegButDiseased = (1.0 - this.testAccuracy) * diseasedPop;
             var testPositiveAndDiseased = diseasedPop - testNegButDiseased;
             var testPositiveButHealthy = healthyPop - testNegAndHealthy;
             var testPositive = testPositiveAndDiseased + testPositiveButHealthy;
@@ -156,8 +157,8 @@ export default {
 
             // update footnote info
             $("#num-positive").text(testPositive.toLocaleString());
-            $("#num-population").text(TOTAL_POPULATION.toLocaleString());
-            var probPositive = testPositive / TOTAL_POPULATION;
+            $("#num-population").text(this.totalPopulation.toLocaleString());
+            var probPositive = testPositive / this.totalPopulation;
             $("#prob-positive").text(diseaseConstants.format(probPositive, 4));
 
             this.renderViews();

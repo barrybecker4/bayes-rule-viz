@@ -364,7 +364,7 @@ export default function(parentEl, graph, totalPopulation) {
         var a, dx, dy, distance, h, rx, ry;
         var x2, y2;
 
-        console.log(`p1=${x0} ${y0}, p2=${x1} ${y1}`)
+        //console.log(`p1=${x0} ${y0}, p2=${x1} ${y1}`)
         dx = x1 - x0;
         dy = y1 - y0;
         distance = Math.sqrt((dy * dy) + (dx * dx));
