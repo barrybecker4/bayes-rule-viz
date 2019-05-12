@@ -27,7 +27,7 @@ export default {
    },
 
    mounted() {
-      disease.init(10000000);
+      disease.init(this.totalPopulation, this.initialPctDiseased, this.initialTestAccuracy);
    },
 
    methods: {
