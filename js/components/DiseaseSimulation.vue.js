@@ -1,4 +1,3 @@
-//import bayesRuleView from './bayesRuleView.js'
 import sankeyView from './sankeyView.js'
 import vennDiagramView from './vennDiagramView.js'
 import diseaseConstants from './diseaseConstants.js'
