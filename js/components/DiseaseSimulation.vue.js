@@ -1,6 +1,6 @@
 import BayesRuleView from './BayesRuleView.vue.js'
 import SankeyView from './SankeyView.vue.js'
-import vennDiagramView from './vennDiagramView.js'
+import VennDiagramView from './VennDiagramView.vue.js'
 import diseaseConstants from './diseaseConstants.js'
 
 
@@ -16,6 +16,7 @@ export default {
     components: {
         BayesRuleView,
         SankeyView,
+        VennDiagramView,
     },
     template: `
         <div>
@@ -34,12 +35,17 @@ export default {
                :probDiseased="this.probDiseased"
                :testAccuracy="this.testAccuracy">
             </bayes-rule-view>
-            <div id="venn-diagram-view"></div>
             <sankey-view
                 :graph="this.graph"
                 :probDiseased="this.probDiseased"
                 :testAccuracy="this.testAccuracy">
             </sankey-view>
+            <venn-diagram-view
+                :graph="this.graph"
+                :totalPopulation="this.totalPopulation"
+                :probDiseased="this.probDiseased"
+                :testAccuracy="this.testAccuracy">
+            </venn-diagram-view>
         </div>`,
 
    props: {
@@ -76,13 +82,7 @@ export default {
             $("#test-accuracy").text(this.initialTestAccuracy);
 
             this.initializeInputSection(this.initialPctDiseased, this.initialTestAccuracy);
-
-            //bayesRuleViewer = bayesRuleView("#bayes-rule-view", this.graph, this.totalPopulation);
-            vennDiagramViewer = vennDiagramView("#venn-diagram-view", this.graph, this.totalPopulation);
-            //sankeyViewer = sankeyView("#sankey-view", this.graph);
             this.updateViews();
-
-            $(window).resize(this.renderViews);
         },
 
         /**
@@ -165,14 +165,6 @@ export default {
             $("#num-population").text(this.totalPopulation.toLocaleString());
             var probPositive = testPositive / this.totalPopulation;
             $("#prob-positive").text(diseaseConstants.format(probPositive, 4));
-
-            this.renderViews();
-        },
-
-        renderViews: function() {
-            //bayesRuleViewer.render();
-            //sankeyViewer.render();
-            vennDiagramViewer.render();
         },
 
         clearThumbTip: function(event, ui) {

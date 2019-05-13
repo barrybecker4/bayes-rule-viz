@@ -30,17 +30,12 @@ let sankey = d3.sankey()
 let defs, linksEl, nodesEl;
 let width, height;
 let links;
+let margin = {top: 10, right: 10, bottom: 10, left: 10};
 
 
 export default {
 
    template: `<div id="sankey-view"></div>`,
-
-   data() {
-        return {
-            margin: {top: 10, right: 10, bottom: 10, left: 10}
-        }
-   },
 
    props: {
      graph: {},
@@ -63,7 +58,7 @@ export default {
               var svg = d3.selectAll("#sankey-view").append("svg")
                   .append("g")
                   .attr("transform",
-                      "translate(" + this.margin.left + "," + this.margin.top + ")");
+                      "translate(" + margin.left + "," + margin.top + ")");
 
               defs = svg.append("defs");
               linksEl = svg.append("g");
@@ -77,8 +72,8 @@ export default {
            let el = $(this.$el);
            let chartWidth = el.width();
            let chartHeight = el.height();
-           width = chartWidth - this.margin.left - this.margin.right;
-           height = chartHeight - this.margin.top - this.margin.bottom;
+           width = chartWidth - margin.left - margin.right;
+           height = chartHeight - margin.top - margin.bottom;
 
            // append the svg canvas to the page
            let svg = d3.select("#" + this.$el.id + " svg")
