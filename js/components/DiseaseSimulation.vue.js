@@ -1,5 +1,5 @@
 import BayesRuleView from './BayesRuleView.vue.js'
-import sankeyView from './sankeyView.js'
+import SankeyView from './SankeyView.vue.js'
 import vennDiagramView from './vennDiagramView.js'
 import diseaseConstants from './diseaseConstants.js'
 
@@ -9,12 +9,13 @@ import diseaseConstants from './diseaseConstants.js'
  * https://www.mathsisfun.com/data/probability-false-negatives-positives.html
  */
 
-let sankeyViewer, vennDiagramViewer;
+let vennDiagramViewer;
 
 export default {
 
     components: {
         BayesRuleView,
+        SankeyView,
     },
     template: `
         <div>
@@ -34,7 +35,11 @@ export default {
                :testAccuracy="this.testAccuracy">
             </bayes-rule-view>
             <div id="venn-diagram-view"></div>
-            <div id="sankey-view"></div>
+            <sankey-view
+                :graph="this.graph"
+                :probDiseased="this.probDiseased"
+                :testAccuracy="this.testAccuracy">
+            </sankey-view>
         </div>`,
 
    props: {
@@ -74,7 +79,7 @@ export default {
 
             //bayesRuleViewer = bayesRuleView("#bayes-rule-view", this.graph, this.totalPopulation);
             vennDiagramViewer = vennDiagramView("#venn-diagram-view", this.graph, this.totalPopulation);
-            sankeyViewer = sankeyView("#sankey-view", this.graph);
+            //sankeyViewer = sankeyView("#sankey-view", this.graph);
             this.updateViews();
 
             $(window).resize(this.renderViews);
@@ -166,7 +171,7 @@ export default {
 
         renderViews: function() {
             //bayesRuleViewer.render();
-            sankeyViewer.render();
+            //sankeyViewer.render();
             vennDiagramViewer.render();
         },
 

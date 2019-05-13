@@ -27,24 +27,9 @@ export default {
      testAccuracy: 0,
    },
 
-   data() {
-       return {
-           margin: {}
-       }
-   },
-
-   mounted() {
-   },
-
    watch: {
-       // whenever question changes, this function will run
-       graph: function() {  render(); },
-       probDiseased: function() {
-           this.render();
-       },
-       testAccuracy: function() {
-           this.render();
-       },
+       probDiseased: function() { this.render(); },
+       testAccuracy: function() { this.render(); },
    },
 
    methods: {
