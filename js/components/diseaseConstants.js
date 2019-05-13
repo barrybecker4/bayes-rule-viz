@@ -1,4 +1,5 @@
 
+// todo: move to styles
 export default  {
     POSITIVE_COLOR: "#eecc00",
     HEALTHY_COLOR: "#00ee11",
@@ -10,4 +11,4 @@ export default  {
 
 function format(value, decimals) {
     return value.toLocaleString(undefined, { maximumFractionDigits: decimals });
-};
+}
