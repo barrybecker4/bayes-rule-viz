@@ -9,11 +9,5 @@ new Vue({
         DiseaseSimulation,
         NotesContent,
     },
-
-    data() {
-      return {
-        msg: "FooBar!"
-      }
-    }
 });
 

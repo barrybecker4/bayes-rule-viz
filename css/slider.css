@@ -1,7 +1,8 @@
+
 .ui-slider-horizontal {
     margin-top: 2px;
     height: 10px;
-    width: 450px;
+    width: 420px;
 }
 
 .ui-slider .ui-slider-handle {
@@ -11,6 +12,7 @@
 
 .slider {
     float: right;
+    border: 1px solid #778899;
 }
 
 .tooltip {

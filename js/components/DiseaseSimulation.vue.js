@@ -1,16 +1,13 @@
-import BayesRuleView from './BayesRuleView.vue.js'
-import SankeyView from './SankeyView.vue.js'
-import VennDiagramView from './VennDiagramView.vue.js'
 import diseaseConstants from './diseaseConstants.js'
+import BayesRuleView from './views/BayesRuleView.vue.js'
+import SankeyView from './views/SankeyView.vue.js'
+import VennDiagramView from './views/VennDiagramView.vue.js'
 
 
 /**
  * Interactively visualize disease testing using Bayes' rule.
  * https://www.mathsisfun.com/data/probability-false-negatives-positives.html
  */
-
-let vennDiagramViewer;
-
 export default {
 
     components: {

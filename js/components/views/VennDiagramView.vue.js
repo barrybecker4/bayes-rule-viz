@@ -1,4 +1,4 @@
-import diseaseConstants from './diseaseConstants.js'
+import diseaseConstants from '../diseaseConstants.js'
 
 /** all circles will be relative to the test positive circle */
 let TEST_POS_CIRCLE_RADIUS = 250;
@@ -33,8 +33,8 @@ export default {
        /** Add the initial svg structure */
        init: function() {
             // append the svg canvas to the page
-            var rootSvg = d3.selectAll("#venn-diagram-view").append("svg");
-            var svg = rootSvg.append("g")
+            let rootSvg = d3.selectAll("#venn-diagram-view").append("svg");
+            let svg = rootSvg.append("g")
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
@@ -300,7 +300,7 @@ export default {
 
            // This function returns the area of intersection when the two circles are x apart.
            let y = function (x) {
-               if (x == 0) {
+               if (x === 0) {
                    return maxOverlap;
                }
                let cosCBD = (radBsq + x * x - radAsq) / (2.0 * radB * x);
@@ -328,7 +328,7 @@ export default {
         findXForY: function(overlap, y, maxDistance, maxOverlap) {
 
             // if they totally overlay, then we know the distance is 0;
-            if (overlap == maxOverlap) {
+            if (overlap === maxOverlap) {
                 return 0;
             }
             let lower = 0;

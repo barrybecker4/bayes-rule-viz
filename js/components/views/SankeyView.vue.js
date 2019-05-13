@@ -1,4 +1,4 @@
-import diseaseConstants from './diseaseConstants.js'
+import diseaseConstants from '../diseaseConstants.js'
 
 
 let colorScale = d3.scale.ordinal()
@@ -13,11 +13,11 @@ let colorScale = d3.scale.ordinal()
 
 function getLinkID(d) {
    return "link-" + makeValid(d.source.name) + "-" + makeValid(d.target.name);
-};
+}
 
 function nodeColor(d) {
    return d.color = colorScale(makeValid(d.name));
-};
+}
 
 function makeValid(s) {
    return s.replace(/ /g, "").replace(/,/g, "");
@@ -55,7 +55,7 @@ export default {
    methods: {
        /** Add the initial svg structure */
        init: function() {
-              var svg = d3.selectAll("#sankey-view").append("svg")
+              let svg = d3.selectAll("#sankey-view").append("svg")
                   .append("g")
                   .attr("transform",
                       "translate(" + margin.left + "," + margin.top + ")");

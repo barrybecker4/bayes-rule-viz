@@ -1,5 +1,4 @@
-import diseaseConstants from './diseaseConstants.js'
-
+import diseaseConstants from '../diseaseConstants.js'
 
 export default {
 
