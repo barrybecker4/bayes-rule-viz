@@ -53,12 +53,6 @@ export default {
    },
 
    watch: {
-       graph: {
-           handler() {
-               this.render();
-           },
-           deep: true,
-       },
        probDiseased: function() { this.render(); },
        testAccuracy: function() { this.render(); },
    },
@@ -74,18 +68,20 @@ export default {
               defs = svg.append("defs");
               linksEl = svg.append("g");
               nodesEl = svg.append("g");
+
               $(window).resize(this.render);
         },
 
        /** update the sankey diagram */
        render: function() {
-           var chartWidth = $(this.$el).width();
-           var chartHeight = $(this.$el).height();
+           let el = $(this.$el);
+           let chartWidth = el.width();
+           let chartHeight = el.height();
            width = chartWidth - this.margin.left - this.margin.right;
            height = chartHeight - this.margin.top - this.margin.bottom;
 
            // append the svg canvas to the page
-           var svg = d3.select("#" + this.$el.id + " svg")
+           let svg = d3.select("#" + this.$el.id + " svg")
                .attr("width", chartWidth)
                .attr("height", chartHeight);
 
