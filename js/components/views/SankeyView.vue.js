@@ -1,4 +1,4 @@
-import diseaseConstants from './diseaseConstants.js'
+import diseaseConstants from '../diseaseConstants.js'
 
 
 let colorScale = d3.scale.ordinal()

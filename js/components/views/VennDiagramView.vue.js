@@ -1,4 +1,4 @@
-import diseaseConstants from './diseaseConstants.js'
+import diseaseConstants from '../diseaseConstants.js'
 
 /** all circles will be relative to the test positive circle */
 let TEST_POS_CIRCLE_RADIUS = 250;
