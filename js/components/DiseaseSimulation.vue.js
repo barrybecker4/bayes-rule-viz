@@ -1,7 +1,8 @@
-import diseaseConstants from './diseaseConstants.js'
+import diseaseConsts from './diseaseConsts.js'
 import BayesRuleView from './views/BayesRuleView.vue.js'
 import SankeyView from './views/SankeyView.vue.js'
 import VennDiagramView from './views/VennDiagramView.vue.js'
+import NotesContent from './NotesContent.vue.js'
 
 
 /**
@@ -14,35 +15,23 @@ export default {
         BayesRuleView,
         SankeyView,
         VennDiagramView,
+        NotesContent
     },
     template: `
         <div>
             <div class="inputs">
             <span class="input-line">The incidence of the disease in the population is
-               <span id="probability-diseased"></span>%
+               <span id="probability-diseased">{{initialPctDiseased}}%</span>
                <span id="probability-diseased-slider" class="slider"></span>
             </span>
-               <div class="input-line">The disease testing accuracy is <span id="test-accuracy"></span>%
+               <div class="input-line">The disease testing accuracy is <span id="test-accuracy">{{initialTestAccuracy}}%</span>
                    <div id="test-accuracy-slider" class="slider"></div>
                </div>
             </div>
-            <bayes-rule-view
-               :graph="this.graph"
-               :totalPopulation="this.totalPopulation"
-               :probDiseased="this.probDiseased"
-               :testAccuracy="this.testAccuracy">
-            </bayes-rule-view>
-            <sankey-view
-                :graph="this.graph"
-                :probDiseased="this.probDiseased"
-                :testAccuracy="this.testAccuracy">
-            </sankey-view>
-            <venn-diagram-view
-                :graph="this.graph"
-                :totalPopulation="this.totalPopulation"
-                :probDiseased="this.probDiseased"
-                :testAccuracy="this.testAccuracy">
-            </venn-diagram-view>
+            <bayes-rule-view :graph="this.graph" :totalPopulation="this.totalPopulation"></bayes-rule-view>
+            <sankey-view :graph="this.graph" @highlight="onHighlight" @unhighlight="onUnhighlight"></sankey-view>
+            <venn-diagram-view :graph="this.graph" :totalPopulation="this.totalPopulation"></venn-diagram-view>
+            <notes-content :testPositive="this.testPositive" :totalPopulation="this.totalPopulation"></notes-content>
         </div>`,
 
    props: {
@@ -54,17 +43,36 @@ export default {
    data() {
        return {
            graph: {
-               "nodes": [
-                   {"node": 0, "id": "diseased", "name": "Diseased"},
-                   {"node": 1, "id": "healthy", "name": "Healthy"},
-                   {"node": 2, "id": "test-negative-diseased", "name": "Test negative, but infected!"},
-                   {"node": 3, "id": "test-positive", "name": "Test positive for the Disease"},
-                   {"node": 4, "id": "test-negative-healthy", "name": "Test negative and Healthy"}
-               ]
+               "nodes": diseaseConsts.NODES,
+               links: [0, 0, 0],
            },
            probDiseased: this.initialPctDiseased,
            testAccuracy: this.initialTestAccuracy,
        }
+   },
+
+   computed: {
+       diseasedPop: function() {
+           return this.probDiseased * this.totalPopulation;
+       },
+       healthyPop: function() {
+           return this.totalPopulation - this.diseasedPop;
+       },
+       testNegAndHealthy: function() {
+           return this.testAccuracy * this.healthyPop;
+       },
+       testNegButDiseased: function() {
+           return (1.0 - this.testAccuracy) * this.diseasedPop;
+       },
+       testPositiveAndDiseased: function() {
+           return this.diseasedPop - this.testNegButDiseased;
+       },
+       testPositiveButHealthy: function() {
+           return this.healthyPop - this.testNegAndHealthy;
+       },
+       testPositive: function() {
+           return this.testPositiveAndDiseased + this.testPositiveButHealthy;
+       },
    },
 
    mounted() {
@@ -73,14 +81,9 @@ export default {
 
    methods: {
        init: function() {
-
-            $("#total-population").text(this.totalPopulation.toLocaleString());
-            $("#probability-diseased").text(this.initialPctDiseased);
-            $("#test-accuracy").text(this.initialTestAccuracy);
-
             this.initializeInputSection(this.initialPctDiseased, this.initialTestAccuracy);
             this.updateViews();
-        },
+       },
 
         /**
          * Show two sliders that allow changing the incidence and accuracy.
@@ -111,11 +114,11 @@ export default {
         },
 
         pctDiseasedConverter: function(sliderValue) {
-            return diseaseConstants.format(Math.pow(10, sliderValue), 2);
+            return diseaseConsts.format(Math.pow(10, sliderValue), 2) + "%";
         },
 
         testAccuracyConverter: function(sliderValue) {
-            return sliderValue / 10;
+            return sliderValue / 10 + "%";
         },
 
         /**
@@ -142,31 +145,25 @@ export default {
             this.probDiseased = parseFloat($("#probability-diseased").text()) / 100.0;
             this.testAccuracy = parseFloat($("#test-accuracy").text()) / 100.0;
 
-            var diseasedPop = this.probDiseased * this.totalPopulation;
-            var healthyPop = this.totalPopulation - diseasedPop;
-            var testNegAndHealthy = this.testAccuracy * healthyPop;
-            var testNegButDiseased = (1.0 - this.testAccuracy) * diseasedPop;
-            var testPositiveAndDiseased = diseasedPop - testNegButDiseased;
-            var testPositiveButHealthy = healthyPop - testNegAndHealthy;
-            var testPositive = testPositiveAndDiseased + testPositiveButHealthy;
-
-            this.graph.links = [
-                {"source": 0, "target": 2, "value": testNegButDiseased},
-                {"source": 0, "target": 3, "value": testPositiveAndDiseased},
-                {"source": 1, "target": 3, "value": testPositiveButHealthy},
-                {"source": 1, "target": 4, "value": testNegAndHealthy}
+            let links = [
+                {"source": 0, "target": 2, "value": this.testNegButDiseased},
+                {"source": 0, "target": 3, "value": this.testPositiveAndDiseased},
+                {"source": 1, "target": 3, "value": this.testPositiveButHealthy},
+                {"source": 1, "target": 4, "value": this.testNegAndHealthy}
             ];
-
-            // update footnote info
-            $("#num-positive").text(testPositive.toLocaleString());
-            $("#num-population").text(this.totalPopulation.toLocaleString());
-            var probPositive = testPositive / this.totalPopulation;
-            $("#prob-positive").text(diseaseConstants.format(probPositive, 4));
+            Vue.set(this.graph, 'links', links); // needed so Vue recognizes change
         },
 
         clearThumbTip: function(event, ui) {
             $("#probability-diseased-slider").find('.ui-slider-handle').empty();
             $("#test-accuracy-slider").find('.ui-slider-handle').empty();
         },
+
+        onHighlight(value) {
+          console.log("highlight:" + value);
+        },
+        onUnhighlight(value) {
+          console.log("unhighlight:" + value);
+        }
    },
 }

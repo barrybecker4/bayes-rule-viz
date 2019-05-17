@@ -1,6 +1,5 @@
 .node rect {
     cursor: move;
-    fill-opacity: .9;
     shape-rendering: crispEdges;
 }
 
@@ -9,9 +8,7 @@
     text-shadow: 0 1px 0 #fff;
 }
 
+
 .link {
     fill: none;
-    stroke: #000;
-    stroke-opacity: .4;
 }
-
