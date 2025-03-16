@@ -18,19 +18,27 @@ export default {
         NotesContent
     },
     template: `
-        <div>
+        <div class="disease-simulation">
             <div class="inputs">
-            <span class="input-line">The incidence of the disease in the population is
-               <span id="probability-diseased">{{initialPctDiseased}}%</span>
-               <span id="probability-diseased-slider" class="slider"></span>
-            </span>
-               <div class="input-line">The disease testing accuracy is <span id="test-accuracy">{{initialTestAccuracy}}%</span>
-                   <div id="test-accuracy-slider" class="slider"></div>
-               </div>
+                <div class="input-line">
+                    <label for="probability-diseased-slider">Disease prevalence in population:</label>
+                    <span id="probability-diseased" class="slider-value">{{initialPctDiseased}}%</span>
+                    <div id="probability-diseased-slider" class="slider"></div>
+                </div>
+                <div class="input-line">
+                    <label for="test-accuracy-slider">Test accuracy:</label>
+                    <span id="test-accuracy" class="slider-value">{{initialTestAccuracy}}%</span>
+                    <div id="test-accuracy-slider" class="slider"></div>
+                </div>
             </div>
+            
             <bayes-rule-view :graph="this.graph" :totalPopulation="this.totalPopulation"></bayes-rule-view>
-            <sankey-view :graph="this.graph" @highlight="onHighlight" @unhighlight="onUnhighlight"></sankey-view>
-            <venn-diagram-view :graph="this.graph" :totalPopulation="this.totalPopulation"></venn-diagram-view>
+            
+            <div class="visualization-container">
+                <sankey-view :graph="this.graph" @highlight="onHighlight" @unhighlight="onUnhighlight"></sankey-view>
+                <venn-diagram-view :graph="this.graph" :totalPopulation="this.totalPopulation"></venn-diagram-view>
+            </div>
+            
             <notes-content :testPositive="this.testPositive" :totalPopulation="this.totalPopulation"></notes-content>
         </div>`,
 

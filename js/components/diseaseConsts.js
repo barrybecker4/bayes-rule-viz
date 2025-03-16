@@ -1,5 +1,9 @@
 
-// todo: move to styles
+const DISEASED_COLOR = "#d32f2f";        // More accessible red
+const HEALTHY_COLOR = "#388e3c";         // More accessible green
+const POSITIVE_COLOR = "#f57c00";        // Amber for positive
+const TEST_NEG_HEALTHY_COLOR = "#4caf50"; // Lighter green
+const TEST_NEG_DISEASED_COLOR = "#e57373"; // Lighter red
 
 const DISEASED = "diseased";
 const HEALTHY = "healthy";
@@ -24,11 +28,11 @@ export default  {
         { "node": 3, "id": TEST_POS, "name": "Test positive for the Disease" },
         { "node": 4, "id": TEST_NEG_HEALTHY, "name": "Test negative and Healthy" }
     ],
-    POSITIVE_COLOR: "#eecc00",
-    HEALTHY_COLOR: "#00ee11",
-    DISEASED_COLOR: "#ff3300",
-    TEST_NEG_HEALTHY_COLOR: "#00ff00",
-    TEST_NEG_DISEASED_COLOR: "#cc0044",
+    POSITIVE_COLOR,
+    HEALTHY_COLOR,
+    DISEASED_COLOR,
+    TEST_NEG_HEALTHY_COLOR,
+    TEST_NEG_DISEASED_COLOR,
 
     format,
 }

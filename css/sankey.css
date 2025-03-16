@@ -1,14 +1,55 @@
 .node rect {
-    cursor: move;
+    cursor: pointer;
     shape-rendering: crispEdges;
+    transition: fill-opacity 0.3s ease;
 }
 
 .node text {
     pointer-events: none;
     text-shadow: 0 1px 0 #fff;
+    font-size: 14px;
+    font-weight: 500;
 }
-
 
 .link {
     fill: none;
+    transition: stroke-opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.sankey-tooltip {
+    position: absolute;
+    background: rgba(50, 50, 50, 0.9);
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    pointer-events: none;
+    max-width: 250px;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.sankey-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.sankey-button {
+    background: rgba(255,255,255,0.8);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s ease;
+}
+
+.sankey-button:hover {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }

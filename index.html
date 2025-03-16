@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Disease Testing</title>
-
-        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-        <!--script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.1.6/vue.min.js"></script-->  <!-- try 2.6.10 -->
-
-        <script src="lib/jquery-1.12.4.min.js"></script>
-        <script src="lib/jquery-ui-1.11.4.min.js"></script>
-        <script src="lib/d3.min.js"></script>
-        <script src="lib/sankey.js"></script>
-
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="lib/jquery-ui-1.11.4.min.css">
         <link rel="stylesheet" type="text/css" href="css/styles.css">
         <link rel="stylesheet" type="text/css" href="css/bayesRule.css">
         <link rel="stylesheet" type="text/css" href="css/sankey.css">
         <link rel="stylesheet" type="text/css" href="css/vennDiagram.css">
         <link rel="stylesheet" type="text/css" href="css/slider.css">
+
+        <!--script src="https://cdn.jsdelivr.net/npm/vue"></script-->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.1.6/vue.min.js"></script>  <!-- try 2.6.10 -->
+
+        <script src="lib/jquery-1.12.4.min.js"></script>
+        <script src="lib/jquery-ui-1.11.4.min.js"></script>
+        <script src="lib/d3.min.js"></script>
+        <script src="lib/sankey.js"></script>
+
+        
 
         <meta charset="UTF-8">
         <meta name="description" content="Visualization of Baye's rule using disease testing context">
@@ -25,16 +29,15 @@
     </head>
 
     <body>
-        <div id="app">
-            <h1>Disease Testing Visualization</h1>
-
+        <div class="container" id="app">
             <introduction-content></introduction-content>
-            <disease-simulation
-                    :total-population="10000000"
-                    :initial-pct-diseased="1"
-                    :initial-test-accuracy="90">
+            <disease-simulation 
+                :total-population="100000" 
+                :initial-pct-diseased="1" 
+                :initial-test-accuracy="90">
             </disease-simulation>
         </div>
+    
+        <script type="module" src="js/App.vue.js"></script>
     </body>
-    <script src="js/App.vue.js" type="module"></script>
 </html>
